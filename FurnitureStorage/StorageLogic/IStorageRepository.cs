@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StorageLogic.Model;
 
 namespace StorageLogic
 {
     public interface IStorageRepository
     {
-        /// <summary>
-        /// Создать комнату
-        /// <param name="name">название комнаты</param>
-        /// <param name="creationDate">дата, на которую создается комната</param>
-        void CreateRoom(string name, DateTime creationDate);
+        List<Room> Rooms { get; }
+
+        Room CreateRoom(string name, DateTime creationDate);
 
         void RemoveRoom(string name, DateTime removeDate);
     }
