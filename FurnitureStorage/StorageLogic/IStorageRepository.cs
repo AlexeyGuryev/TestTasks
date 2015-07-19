@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using StorageLogic.Model;
 
 namespace StorageLogic
@@ -11,7 +8,11 @@ namespace StorageLogic
     {
         List<Room> Rooms { get; }
 
+        List<RoomState> RoomStates { get; }
+
         Room CreateRoom(string name, DateTime creationDate);
+
+        RoomState AddRoomState(Room room, DateTime stateDate);
 
         void RemoveRoom(string name, DateTime removeDate);
     }

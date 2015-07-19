@@ -30,7 +30,7 @@ namespace StorageLogic.Test.Stub
 
         public RoomState AddRoomState(Room room, DateTime stateDate)
         {
-            var newRoomState = new RoomState {Room = room, StateDate = stateDate}; 
+            var newRoomState = new RoomState(room, stateDate);
             RoomStates.Add(newRoomState);
             return newRoomState;
         }

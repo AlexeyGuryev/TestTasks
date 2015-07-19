@@ -21,14 +21,14 @@ namespace StorageLogic.Test
         public void CreateRoomIncreasesAllRoomsCount()
         {
             var previousRoomCount =
-                (_service.QueryRooms() ?? Enumerable.Empty<Room>()).Count();
+                (_service.Rooms ?? Enumerable.Empty<Room>()).Count();
 
             _service.EnsureRoom("Yet another room", DateTime.Now);
 
             var newRoomCount =
-                (_service.QueryRooms() ?? Enumerable.Empty<Room>()).Count();
+                (_service.Rooms ?? Enumerable.Empty<Room>()).Count();
 
-            Assert.AreEqual(previousRoomCount, newRoomCount + 1);
+            Assert.AreEqual(previousRoomCount + 1, newRoomCount);
         }
 
         [TestMethod]

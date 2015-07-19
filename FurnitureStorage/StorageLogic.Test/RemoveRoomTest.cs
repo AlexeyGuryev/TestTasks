@@ -53,7 +53,7 @@ namespace StorageLogic.Test
 
         [TestMethod]
         [ExpectedException(typeof (DateConsistenceException))]
-        public void CreationDateIsLaterThanRemoveDate()
+        public void RemoveRoomCheckCreationDateIsLaterThanRemoveDate()
         {
             var yesterdayDate = DateTime.Now.AddDays(-1);
 
@@ -65,7 +65,7 @@ namespace StorageLogic.Test
 
         [TestMethod]
         [ExpectedException(typeof(DateConsistenceException))]
-        public void AllFurnitureTransferOnRoomRemove()
+        public void RemoveRoomCauseTransferAllFurniture()
         {
             var yesterdayDate = DateTime.Now.AddDays(-1);
 

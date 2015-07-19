@@ -22,7 +22,7 @@ namespace StorageLogic.Test
 
         [TestMethod]
         [ExpectedException(typeof(ItemNotFoundException))]
-        public void SourceRoomMustExistsOnFurnitureCreationDate()
+        public void FurnitureMoveChecksSourceRoomExistsOnFurnitureCreationDate()
         {
             var existRoom = GetTestRoomNow();
             _service.MoveFurniture("desk", existRoom.Name, "The room, which i really did not create",
@@ -31,7 +31,7 @@ namespace StorageLogic.Test
 
         [TestMethod]
         [ExpectedException(typeof(ItemNotFoundException))]
-        public void DestinationRoomMustExistsOnFurnitureCreationDate()
+        public void FurnitureMoveChecksDestinationRoomExistingOnFurnitureCreationDate()
         {
             var existRoom = GetTestRoomNow();
             _service.MoveFurniture("desk", "The room, which i really did not create", existRoom.Name,
