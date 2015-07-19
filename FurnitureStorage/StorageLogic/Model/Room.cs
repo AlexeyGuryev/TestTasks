@@ -17,8 +17,15 @@ namespace StorageLogic.Model
 
         public Dictionary<string, int> Furnitures { get; set; }
 
+        public Room()
+        {
+            Furnitures = new Dictionary<string, int>();
+        }
+
         public void AddFurniture(string furnitureType)
         {
+            Furnitures = Furnitures ?? new Dictionary<string, int>();
+
             if (Furnitures.ContainsKey(furnitureType))
             {
                 Furnitures[furnitureType]++;
@@ -31,6 +38,8 @@ namespace StorageLogic.Model
 
         public void RemoveFurniture(string furnitureType)
         {
+            Furnitures = Furnitures ?? new Dictionary<string, int>();           
+
             if (Furnitures.ContainsKey(furnitureType))
             {
                 Furnitures[furnitureType]--;

@@ -43,20 +43,65 @@ namespace StorageLogic.Service
             var room = Rooms.FirstOrDefault(c => c.Name == roomName);
             if (room == null)
             {
-                CreateRoom(roomName, creationDate);
+                return CreateRoom(roomName, creationDate);
             }
-            return room;
+            else
+            {
+                return room;
+            }
         }
 
         public void RemoveRoom(string roomName, string transferRoomName, DateTime removeDate) { }
 
-        public void CreateFurniture(string furnitureType, string roomName, DateTime createFurnitureDate) { }
+        public void CreateFurniture(string furnitureType, string roomName, DateTime createFurnitureDate)
+        {
+            var room = GetRoom(roomName, createFurnitureDate);
+            CheckIfRoomStateIsLatest(room, createFurnitureDate);
+
+            room.AddFurniture(furnitureType);
+            _repository.AddRoomState(room, createFurnitureDate);
+        }
+
+        private Room GetRoom(string roomName, DateTime? date = null)
+        {
+            var room = Rooms.FirstOrDefault(c => c.Name == roomName && (c.CreationDate <= date || date == null));
+            if (room != null)
+            {
+                return room;
+            }
+            else
+            {
+                var dateMessage = date != null ? " on date " + date : string.Empty;
+                throw new ItemNotFoundException("Room with name {0} not exists{1}", roomName, dateMessage);
+            }
+        }
+
+        private void CheckIfRoomStateIsLatest(Room room, DateTime date)
+        {
+            var roomStateExists = _repository.RoomStates.Any(c => c.Room.Name == room.Name && c.StateDate > date);
+            if (roomStateExists)
+            {
+                throw new DateConsistenceException("There is later changes for room {0}", room.Name);
+            }
+        }
 
         public void MoveFurniture(string furnitureType, string roomNameFrom, string roomNameTo, DateTime moveFurnitureDate) { }
 
-        public List<Room> QueryRooms(DateTime queryDate) { return null; }
-
-
+        public List<Room> QueryRooms(DateTime queryDate)
+        {
+            var roomsInState = new List<Room>();
+            foreach (var room in Rooms)
+            {
+                var roomState = _repository.RoomStates
+                    .OrderByDescending(c => c.StateDate)
+                    .FirstOrDefault(c => c.Room.Name == room.Name && c.StateDate <= queryDate);
+                if (roomState != null)
+                {
+                    roomsInState.Add(roomState.Room);
+                }
+            }
+            return roomsInState;
+        }
 
         public List<RoomState> GetHistory()
         {

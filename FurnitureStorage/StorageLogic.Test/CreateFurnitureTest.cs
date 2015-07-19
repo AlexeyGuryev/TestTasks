@@ -20,15 +20,7 @@ namespace StorageLogic.Test
 
         [TestMethod]
         [ExpectedException(typeof (ItemNotFoundException))]
-        public void RoomMustExistsOnFurnitureCreationDate()
-        {
-            _service.CreateFurniture("desk", "The room, which i really did not create",
-                DateTime.Now);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof (DateConsistenceException))]
-        public void FurnitureCreationDateIsLaterThanLastRoomStateDate()
+        public void FurnitureCreationChecksThatRoomExistsOnDate()
         {
             var room = GetTestRoomNow();
 
@@ -38,35 +30,43 @@ namespace StorageLogic.Test
         }
 
         [TestMethod]
-        public void FurnitureCreatesIfNotExists()
+        [ExpectedException(typeof (DateConsistenceException))]
+        public void FurnitureCreationDateIsLaterThanLastRoomStateDate()
         {
-            var furnitureName = "The unique desk";
             var room = GetTestRoomNow();
 
-            var furnitureExistsPrev = room.Furnitures.ContainsKey(furnitureName);
+            var tomorrowDate = DateTime.Now.AddDays(1);
+            _service.CreateFurniture("desk", room.Name, tomorrowDate);
 
-            _service.CreateFurniture(furnitureName, room.Name, DateTime.Now);
-
-            var furnitureExistsNow = room.Furnitures.ContainsKey(furnitureName);
-
-            Assert.AreEqual(furnitureExistsPrev, furnitureExistsNow);
+            _service.CreateFurniture("chair", room.Name, DateTime.Now);
         }
 
         [TestMethod]
-        public void FurnitureCountIncrementsThenItExistsInRoom()
+        public void FurnitureCreatesIfNotExists()
         {
-            var furnitureName = "Desk";
+            var furnitureType = "The unique desk";
             var room = GetTestRoomNow();
 
-            if (room.Furnitures.ContainsKey(furnitureName))
+            _service.CreateFurniture(furnitureType, room.Name, DateTime.Now);
+
+            Assert.IsTrue(room.Furnitures.ContainsKey(furnitureType));
+        }
+
+        [TestMethod]
+        public void FurnitureCreationCauseIncrementCountThenItExistsInRoom()
+        {
+            var furnitureType = "Desk";
+            var room = GetTestRoomNow();
+
+            if (!room.Furnitures.ContainsKey(furnitureType))
             {
-                _service.CreateFurniture(furnitureName, room.Name, DateTime.Now);
+                _service.CreateFurniture(furnitureType, room.Name, DateTime.Now);
             }
-            var furnitureCountPrev = room.Furnitures[furnitureName];
+            var furnitureCountPrev = room.Furnitures[furnitureType];
 
-            _service.CreateFurniture(furnitureName, room.Name, DateTime.Now);
+            _service.CreateFurniture(furnitureType, room.Name, DateTime.Now);
 
-            var furnitureCountNow = room.Furnitures[furnitureName];
+            var furnitureCountNow = room.Furnitures[furnitureType];
             Assert.AreEqual(furnitureCountPrev + 1, furnitureCountNow);
         }
 
