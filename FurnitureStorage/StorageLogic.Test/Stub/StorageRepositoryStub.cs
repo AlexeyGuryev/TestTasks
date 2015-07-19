@@ -35,6 +35,13 @@ namespace StorageLogic.Test.Stub
             return newRoomState;
         }
 
+        public RoomState GetLatestRoomState(string roomName, DateTime queryDate)
+        {
+            return RoomStates
+                .OrderByDescending(c => c.StateDate)
+                .FirstOrDefault(c => c.Room.Name == roomName && c.StateDate <= queryDate);
+        }
+
         public void RemoveRoom(string name, DateTime removeDate)
         {
             var room = Rooms.FirstOrDefault(c => c.Name == name);

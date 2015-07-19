@@ -75,9 +75,7 @@ namespace StorageLogic.Service
         // todo implement room state comparing
         private void AddRoomStateIfChanged(Room room, DateTime newStateDate)
         {
-            //var lastRoomState = _repository.RoomStates
-            //    .OrderByDescending(c => c.StateDate)
-            //    .FirstOrDefault(c => c.Room.Name == room.Name && c.StateDate <= newStateDate);
+            //var lastRoomState = _repository.GetLatestRoomState(room.Name, newStateDate);
 
             //if (lastRoomState != null)
             //{
@@ -125,9 +123,7 @@ namespace StorageLogic.Service
             var roomsInState = new List<Room>();
             foreach (var room in Rooms)
             {
-                var roomState = _repository.RoomStates
-                    .OrderByDescending(c => c.StateDate)
-                    .FirstOrDefault(c => c.Room.Name == room.Name && c.StateDate <= queryDate);
+                var roomState = _repository.GetLatestRoomState(room.Name, queryDate);
                 if (roomState != null)
                 {
                     roomsInState.Add(roomState.Room);
