@@ -2,8 +2,6 @@
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StorageLogic.Exception;
-using StorageLogic.Service;
-using StorageLogic.Test.Stub;
 using StorageLogic.Model;
 
 namespace StorageLogic.Test
@@ -16,16 +14,14 @@ namespace StorageLogic.Test
     /// # move-furniture: новое состояние roomTo - добавлена мебель типа type
     /// </summary>
     [TestClass]
-    public class MoveFurnitureTest
+    public class MoveFurnitureTest : StorageBaseTest
     {
-        private readonly StorageService _service = new StorageService(new StorageRepositoryStub());
-
         [TestMethod]
         [ExpectedException(typeof(ItemNotFoundException))]
         public void FurnitureMoveChecksSourceRoomExistsOnFurnitureCreationDate()
         {
             var existRoom = GetTestRoomNow();
-            _service.MoveFurniture("desk", existRoom.Name, "The room, which i really did not create",
+            Service.MoveFurniture("desk", existRoom.Name, "The room, which i really did not create",
                 DateTime.Now);
         }
 
@@ -34,7 +30,7 @@ namespace StorageLogic.Test
         public void FurnitureMoveChecksDestinationRoomExistingOnFurnitureCreationDate()
         {
             var existRoom = GetTestRoomNow();
-            _service.MoveFurniture("desk", "The room, which i really did not create", existRoom.Name,
+            Service.MoveFurniture("desk", "The room, which i really did not create", existRoom.Name,
                 DateTime.Now);
         }
 
@@ -44,12 +40,12 @@ namespace StorageLogic.Test
         {
             var yesterdayDate = DateTime.Now.AddDays(-1);
 
-            var roomFrom = _service.EnsureRoom("Bath", yesterdayDate);
-            var roomTo = _service.EnsureRoom("Living room", yesterdayDate);
+            var roomFrom = Service.EnsureRoom("Bath", yesterdayDate);
+            var roomTo = Service.EnsureRoom("Living room", yesterdayDate);
 
-            _service.CreateFurniture("Desk", roomTo.Name, DateTime.Now);
+            Service.CreateFurniture("Desk", roomTo.Name, DateTime.Now);
 
-            _service.MoveFurniture("desk", roomFrom.Name, roomTo.Name, yesterdayDate);
+            Service.MoveFurniture("desk", roomFrom.Name, roomTo.Name, yesterdayDate);
         }
 
         [TestMethod]
@@ -58,29 +54,29 @@ namespace StorageLogic.Test
         {
             var yesterdayDate = DateTime.Now.AddDays(-1);
 
-            var roomFrom = _service.EnsureRoom("Bath", yesterdayDate);
-            var roomTo = _service.EnsureRoom("Living room", yesterdayDate);
+            var roomFrom = Service.EnsureRoom("Bath", yesterdayDate);
+            var roomTo = Service.EnsureRoom("Living room", yesterdayDate);
 
-            _service.CreateFurniture("Desk", roomFrom.Name, DateTime.Now);
+            Service.CreateFurniture("Desk", roomFrom.Name, DateTime.Now);
 
-            _service.MoveFurniture("desk", roomFrom.Name, roomTo.Name, yesterdayDate);
+            Service.MoveFurniture("desk", roomFrom.Name, roomTo.Name, yesterdayDate);
         }
 
         [TestMethod]
         public void FurnitureMoveCauseUpdateRoomsStates()
         {
             var furnitureType = "desk";
-            var roomFrom = _service.EnsureRoom("Bath", DateTime.Now);
-            var roomTo = _service.EnsureRoom("Living room", DateTime.Now);
+            var roomFrom = Service.EnsureRoom("Bath", DateTime.Now);
+            var roomTo = Service.EnsureRoom("Living room", DateTime.Now);
             
             var tomorrowDate = DateTime.Now.AddDays(1);
 
-            _service.CreateFurniture(furnitureType, roomFrom.Name, DateTime.Now);
+            Service.CreateFurniture(furnitureType, roomFrom.Name, DateTime.Now);
 
-            _service.MoveFurniture(furnitureType, roomFrom.Name, roomTo.Name, tomorrowDate);
+            Service.MoveFurniture(furnitureType, roomFrom.Name, roomTo.Name, tomorrowDate);
 
-            var roomToStateHistory = _service.GetRoomHistory(roomTo.Name) ?? Enumerable.Empty<RoomState>();
-            var roomFromStateHistory = _service.GetRoomHistory(roomFrom.Name) ?? Enumerable.Empty<RoomState>();
+            var roomToStateHistory = Service.GetRoomHistory(roomTo.Name) ?? Enumerable.Empty<RoomState>();
+            var roomFromStateHistory = Service.GetRoomHistory(roomFrom.Name) ?? Enumerable.Empty<RoomState>();
 
             Assert.IsTrue(roomToStateHistory.Any(c => c.StateDate == tomorrowDate) &&
                 roomFromStateHistory.Any(c => c.StateDate == tomorrowDate));
@@ -90,10 +86,10 @@ namespace StorageLogic.Test
         public void FurnitureMoveCauseUpdateRoomsFurnitureLists()
         {
             var furnitureType = "desk";
-            var roomFrom = _service.EnsureRoom("Bath", DateTime.Now);
-            var roomTo = _service.EnsureRoom("Living room", DateTime.Now);
+            var roomFrom = Service.EnsureRoom("Bath", DateTime.Now);
+            var roomTo = Service.EnsureRoom("Living room", DateTime.Now);
 
-            _service.CreateFurniture(furnitureType, roomFrom.Name, DateTime.Now);
+            Service.CreateFurniture(furnitureType, roomFrom.Name, DateTime.Now);
 
             var roomFromFurnitureCountPrev = roomFrom.Furnitures[furnitureType];
 
@@ -101,7 +97,7 @@ namespace StorageLogic.Test
                 ? roomFrom.Furnitures[furnitureType]
                 : 0;
 
-            _service.MoveFurniture(furnitureType, roomFrom.Name, roomTo.Name, DateTime.Now);
+            Service.MoveFurniture(furnitureType, roomFrom.Name, roomTo.Name, DateTime.Now);
 
             var roomToFurnitureCountNow = roomTo.Furnitures.ContainsKey(furnitureType)
                 ? roomTo.Furnitures[furnitureType]
@@ -116,7 +112,7 @@ namespace StorageLogic.Test
 
         private Room GetTestRoomNow()
         {
-            return _service.EnsureRoom("Living room", DateTime.Now);
+            return Service.EnsureRoom("Living room", DateTime.Now);
         }
     }
 }

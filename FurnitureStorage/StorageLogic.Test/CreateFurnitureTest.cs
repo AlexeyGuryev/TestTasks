@@ -1,9 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StorageLogic.Exception;
-using StorageLogic.Service;
-using StorageLogic.Test.Stub;
-using System.Linq;
 using StorageLogic.Model;
 
 namespace StorageLogic.Test
@@ -14,10 +12,8 @@ namespace StorageLogic.Test
     /// # create-furniture: новое состояние room - обновился список мебели
     /// </summary>
     [TestClass]
-    public class CreateFurnitureTest
+    public class CreateFurnitureTest : StorageBaseTest
     {
-        private readonly StorageService _service = new StorageService(new StorageRepositoryStub());
-
         [TestMethod]
         [ExpectedException(typeof (ItemNotFoundException))]
         public void FurnitureCreationChecksThatRoomExistsOnDate()
@@ -26,7 +22,7 @@ namespace StorageLogic.Test
 
             var yesterdayDate = DateTime.Now.AddDays(-1);
 
-            _service.CreateFurniture("desk", room.Name, yesterdayDate);
+            Service.CreateFurniture("desk", room.Name, yesterdayDate);
         }
 
         [TestMethod]
@@ -36,9 +32,9 @@ namespace StorageLogic.Test
             var room = GetTestRoomNow();
 
             var tomorrowDate = DateTime.Now.AddDays(1);
-            _service.CreateFurniture("desk", room.Name, tomorrowDate);
+            Service.CreateFurniture("desk", room.Name, tomorrowDate);
 
-            _service.CreateFurniture("chair", room.Name, DateTime.Now);
+            Service.CreateFurniture("chair", room.Name, DateTime.Now);
         }
 
         [TestMethod]
@@ -47,7 +43,7 @@ namespace StorageLogic.Test
             var furnitureType = "The unique desk";
             var room = GetTestRoomNow();
 
-            _service.CreateFurniture(furnitureType, room.Name, DateTime.Now);
+            Service.CreateFurniture(furnitureType, room.Name, DateTime.Now);
 
             Assert.IsTrue(room.Furnitures.ContainsKey(furnitureType));
         }
@@ -60,11 +56,11 @@ namespace StorageLogic.Test
 
             if (!room.Furnitures.ContainsKey(furnitureType))
             {
-                _service.CreateFurniture(furnitureType, room.Name, DateTime.Now);
+                Service.CreateFurniture(furnitureType, room.Name, DateTime.Now);
             }
             var furnitureCountPrev = room.Furnitures[furnitureType];
 
-            _service.CreateFurniture(furnitureType, room.Name, DateTime.Now);
+            Service.CreateFurniture(furnitureType, room.Name, DateTime.Now);
 
             var furnitureCountNow = room.Furnitures[furnitureType];
             Assert.AreEqual(furnitureCountPrev + 1, furnitureCountNow);
@@ -76,16 +72,16 @@ namespace StorageLogic.Test
             var room = GetTestRoomNow();
 
             var furnitureCreationDate = DateTime.Now;
-            _service.CreateFurniture("desk", room.Name, furnitureCreationDate);
+            Service.CreateFurniture("desk", room.Name, furnitureCreationDate);
 
-            var roomStateHistory = _service.GetRoomHistory(room.Name) ?? Enumerable.Empty<RoomState>();
+            var roomStateHistory = Service.GetRoomHistory(room.Name) ?? Enumerable.Empty<RoomState>();
 
             Assert.IsTrue(roomStateHistory.Any(c => c.StateDate == furnitureCreationDate));
         }
 
         private Room GetTestRoomNow()
         {
-            return _service.EnsureRoom("Living room", DateTime.Now);
+            return Service.EnsureRoom("Living room", DateTime.Now);
         }
     }
 }

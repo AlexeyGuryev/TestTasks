@@ -109,8 +109,8 @@ namespace StorageLogic.Service
 
         private void CheckIfRoomStateIsLatest(Room room, DateTime date)
         {
-            var roomStateExists = _repository.RoomStates.Any(c => c.Room.Name == room.Name && c.StateDate > date);
-            if (roomStateExists)
+            var latestState = _repository.GetLatestRoomState(room.Name, DateTime.MaxValue);
+            if (latestState.StateDate > date)
             {
                 throw new DateConsistenceException("There is later changes for room {0}", room.Name);
             }
@@ -131,8 +131,8 @@ namespace StorageLogic.Service
                 roomTo.AddFurniture(furnitureType);
                 roomFrom.RemoveFurniture(furnitureType);
 
-                _repository.AddRoomState(roomFrom, moveFurnitureDate);
-                _repository.AddRoomState(roomTo, moveFurnitureDate);
+                AddRoomStateIfChanged(roomFrom, moveFurnitureDate);
+                AddRoomStateIfChanged(roomTo, moveFurnitureDate);
             }
             else
             {

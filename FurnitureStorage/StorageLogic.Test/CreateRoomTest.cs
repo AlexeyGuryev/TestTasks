@@ -3,8 +3,6 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StorageLogic.Exception;
 using StorageLogic.Model;
-using StorageLogic.Service;
-using StorageLogic.Test.Stub;
 
 namespace StorageLogic.Test
 {
@@ -13,20 +11,18 @@ namespace StorageLogic.Test
     /// # create-room: новое состояние - новая комната без мебели
     /// </summary>
     [TestClass]
-    public class CreateRoomTest
+    public class CreateRoomTest : StorageBaseTest
     {
-        private readonly StorageService _service = new StorageService(new StorageRepositoryStub());
-
         [TestMethod]
         public void CreateRoomIncreasesAllRoomsCount()
         {
             var previousRoomCount =
-                (_service.Rooms ?? Enumerable.Empty<Room>()).Count();
+                (Service.Rooms ?? Enumerable.Empty<Room>()).Count();
 
-            _service.EnsureRoom("Yet another room", DateTime.Now);
+            Service.EnsureRoom("Yet another room", DateTime.Now);
 
             var newRoomCount =
-                (_service.Rooms ?? Enumerable.Empty<Room>()).Count();
+                (Service.Rooms ?? Enumerable.Empty<Room>()).Count();
 
             Assert.AreEqual(previousRoomCount + 1, newRoomCount);
         }
@@ -37,8 +33,8 @@ namespace StorageLogic.Test
         {
             var roomName = "Living room";
 
-            _service.EnsureRoom(roomName, DateTime.Now);
-            _service.CreateRoom(roomName, DateTime.Now);
+            Service.EnsureRoom(roomName, DateTime.Now);
+            Service.CreateRoom(roomName, DateTime.Now);
         }
 
         [TestMethod]
@@ -47,9 +43,9 @@ namespace StorageLogic.Test
             var roomName = "CreateRoomCreatesNewRoomState";
             var date = DateTime.Now;
 
-            _service.EnsureRoom(roomName, date);
+            Service.EnsureRoom(roomName, date);
 
-            var roomStateHistory = _service.GetRoomHistory(roomName) ?? Enumerable.Empty<RoomState>();
+            var roomStateHistory = Service.GetRoomHistory(roomName) ?? Enumerable.Empty<RoomState>();
 
             Assert.IsTrue(roomStateHistory.Any(c => c.StateDate == date));
         }

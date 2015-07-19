@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StorageLogic;
 using StorageLogic.Model;
 
-namespace StorageLogic.Test.Stub
+namespace StoragePersistence
 {
-    public class StorageRepositoryStub : IStorageRepository
+    public class StorageMemoryRepository : IStorageRepository
     {
         public List<Room> Rooms { get; private set; }
         public List<RoomState> RoomStates { get; private set; }
 
-        public StorageRepositoryStub()
+        public StorageMemoryRepository()
         {            
             Rooms = new List<Room>();
             RoomStates = new List<RoomState>();
@@ -35,11 +36,11 @@ namespace StorageLogic.Test.Stub
             return newRoomState;
         }
 
-        public RoomState GetLatestRoomState(string roomName, DateTime queryDate)
+        public RoomState GetLatestRoomState(string roomName, DateTime? queryDate)
         {
             return RoomStates
                 .OrderByDescending(c => c.StateDate)
-                .FirstOrDefault(c => c.Room.Name == roomName && c.StateDate <= queryDate);
+                .FirstOrDefault(c => c.Room.Name == roomName && (queryDate == null || c.StateDate <= queryDate));
         }
 
         public void RemoveRoom(string name, DateTime removeDate)

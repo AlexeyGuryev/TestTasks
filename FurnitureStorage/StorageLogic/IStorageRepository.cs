@@ -14,7 +14,7 @@ namespace StorageLogic
 
         RoomState AddRoomState(Room room, DateTime stateDate);
 
-        RoomState GetLatestRoomState(string roomName, DateTime queryDate);
+        RoomState GetLatestRoomState(string roomName, DateTime? queryDate);
 
         void RemoveRoom(string name, DateTime removeDate);
     }
