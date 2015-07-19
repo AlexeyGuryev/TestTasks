@@ -116,7 +116,30 @@ namespace StorageLogic.Service
             }
         }
 
-        public void MoveFurniture(string furnitureType, string roomNameFrom, string roomNameTo, DateTime moveFurnitureDate) { }
+        public void MoveFurniture(string furnitureType, string roomNameFrom, string roomNameTo,
+            DateTime moveFurnitureDate)
+        {
+            var roomFrom = GetRoom(roomNameFrom, moveFurnitureDate);
+            var roomTo = GetRoom(roomNameTo, moveFurnitureDate);
+
+            CheckIfRoomStateIsLatest(roomFrom, moveFurnitureDate);
+            CheckIfRoomStateIsLatest(roomTo, moveFurnitureDate);
+
+            if (roomFrom.Furnitures.ContainsKey(furnitureType)
+                && roomFrom.Furnitures[furnitureType] > 0)
+            {
+                roomTo.AddFurniture(furnitureType);
+                roomFrom.RemoveFurniture(furnitureType);
+
+                _repository.AddRoomState(roomFrom, moveFurnitureDate);
+                _repository.AddRoomState(roomTo, moveFurnitureDate);
+            }
+            else
+            {
+                throw new ItemNotFoundException("The furniture of type {0} is not exists in room {1}",
+                    furnitureType, roomFrom);
+            }            
+        }
 
         public List<Room> QueryRooms(DateTime queryDate)
         {

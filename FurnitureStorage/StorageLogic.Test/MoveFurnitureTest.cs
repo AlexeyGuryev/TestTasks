@@ -104,7 +104,7 @@ namespace StorageLogic.Test
             _service.MoveFurniture(furnitureType, roomFrom.Name, roomTo.Name, DateTime.Now);
 
             var roomToFurnitureCountNow = roomTo.Furnitures.ContainsKey(furnitureType)
-                ? roomFrom.Furnitures[furnitureType]
+                ? roomTo.Furnitures[furnitureType]
                 : 0;
 
             Assert.IsTrue(
