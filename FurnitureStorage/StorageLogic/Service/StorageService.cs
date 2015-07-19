@@ -29,7 +29,7 @@ namespace StorageLogic.Service
             if (existRoom == null)
             {
                 var newRoom = _repository.CreateRoom(roomName, creationDate);
-                _repository.AddRoomState(newRoom, creationDate);
+                AddRoomStateIfChanged(newRoom, creationDate);
                 return newRoom;
             }
             else
@@ -51,7 +51,40 @@ namespace StorageLogic.Service
             }
         }
 
-        public void RemoveRoom(string roomName, string transferRoomName, DateTime removeDate) { }
+        public void RemoveRoom(string roomName, string transferRoomName, DateTime removeDate) 
+        {
+            var roomToRemove = GetRoom(roomName, removeDate);
+            var transferRoom = GetRoom(transferRoomName, removeDate);
+
+            CheckIfRoomStateIsLatest(roomToRemove, removeDate);
+            CheckIfRoomStateIsLatest(transferRoom, removeDate);
+
+            var furnitures = roomToRemove.Furnitures.Keys.ToList();
+            foreach (var furniture in furnitures)
+            {
+                var countValue = roomToRemove.Furnitures[furniture];
+                transferRoom.AddFurniture(furniture, countValue);
+                roomToRemove.RemoveFurniture(furniture, countValue);
+            }
+            roomToRemove.RemoveDate = removeDate;
+
+            AddRoomStateIfChanged(roomToRemove, removeDate);
+            AddRoomStateIfChanged(transferRoom, removeDate);
+        }
+
+        // todo implement room state comparing
+        private void AddRoomStateIfChanged(Room room, DateTime newStateDate)
+        {
+            //var lastRoomState = _repository.RoomStates
+            //    .OrderByDescending(c => c.StateDate)
+            //    .FirstOrDefault(c => c.Room.Name == room.Name && c.StateDate <= newStateDate);
+
+            //if (lastRoomState != null)
+            //{
+                //if (room.CheckEqualRoom())
+                _repository.AddRoomState(room, newStateDate);
+            //}
+        }
 
         public void CreateFurniture(string furnitureType, string roomName, DateTime createFurnitureDate)
         {
@@ -59,7 +92,7 @@ namespace StorageLogic.Service
             CheckIfRoomStateIsLatest(room, createFurnitureDate);
 
             room.AddFurniture(furnitureType);
-            _repository.AddRoomState(room, createFurnitureDate);
+            AddRoomStateIfChanged(room, createFurnitureDate);
         }
 
         private Room GetRoom(string roomName, DateTime? date = null)

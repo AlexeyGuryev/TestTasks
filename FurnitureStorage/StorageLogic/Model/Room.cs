@@ -22,28 +22,28 @@ namespace StorageLogic.Model
             Furnitures = new Dictionary<string, int>();
         }
 
-        public void AddFurniture(string furnitureType)
+        public void AddFurniture(string furnitureType, int count = 1)
         {
             Furnitures = Furnitures ?? new Dictionary<string, int>();
 
             if (Furnitures.ContainsKey(furnitureType))
             {
-                Furnitures[furnitureType]++;
+                Furnitures[furnitureType] += count;
             }
             else
             {
-                Furnitures.Add(furnitureType, 1);
+                Furnitures.Add(furnitureType, count);
             }
         }
 
-        public void RemoveFurniture(string furnitureType)
+        public void RemoveFurniture(string furnitureType, int count = 1)
         {
             Furnitures = Furnitures ?? new Dictionary<string, int>();           
 
             if (Furnitures.ContainsKey(furnitureType))
             {
-                Furnitures[furnitureType]--;
-                if (Furnitures[furnitureType] == 0)
+                Furnitures[furnitureType] -= count;
+                if (Furnitures[furnitureType] <= 0)
                 {
                     Furnitures.Remove(furnitureType);
                 }

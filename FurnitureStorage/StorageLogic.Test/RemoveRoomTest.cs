@@ -46,13 +46,13 @@ namespace StorageLogic.Test
             var roomToRemove = GetTestRoom(yesterdayDate);
             _service.CreateFurniture("Table", roomToRemove.Name, DateTime.Now);
 
-            var transferRoom = GetRoomWithFurniture(DateTime.Now);
+            var transferRoom = GetRoomWithFurniture(yesterdayDate);
 
             _service.RemoveRoom(roomToRemove.Name, transferRoom.Name, yesterdayDate);
         }
 
         [TestMethod]
-        [ExpectedException(typeof (DateConsistenceException))]
+        [ExpectedException(typeof (ItemNotFoundException))]
         public void RemoveRoomCheckCreationDateIsLaterThanRemoveDate()
         {
             var yesterdayDate = DateTime.Now.AddDays(-1);
@@ -64,25 +64,26 @@ namespace StorageLogic.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(DateConsistenceException))]
         public void RemoveRoomCauseTransferAllFurniture()
         {
-            var yesterdayDate = DateTime.Now.AddDays(-1);
+            var furnitureType1 = "Desk";
+            var furnitureType2 = "Chair";
 
-            var furnitureType = "Desk";
+            var roomToRemove = GetRoomWithFurniture(DateTime.Now, furnitureType1);
+            _service.CreateFurniture(furnitureType2, roomToRemove.Name, DateTime.Now);
 
-            var roomToRemove = GetRoomWithFurniture(DateTime.Now, furnitureType);
-            var transferRoom = GetTestRoom(DateTime.Now);
+            var transferRoom = _service.CreateRoom("The unique room, i hope it's really unique", DateTime.Now);
 
-            var transferRoomFurnitureCount = transferRoom.Furnitures.ContainsKey(furnitureType)
-                ? transferRoom.Furnitures[furnitureType]
-                : 0;
+            var roomToRemoveFurniture1Count = roomToRemove.Furnitures[furnitureType1];
+            var roomToRemoveFurniture2Count = roomToRemove.Furnitures[furnitureType2];
+            _service.RemoveRoom(roomToRemove.Name, transferRoom.Name, DateTime.Now);
 
-            var roomToRemoveFurnitureCount = roomToRemove.Furnitures[furnitureType];            
-            _service.RemoveRoom(roomToRemove.Name, transferRoom.Name, yesterdayDate);
-
-            Assert.IsTrue(transferRoom.Furnitures.ContainsKey(furnitureType)
-                && transferRoom.Furnitures[furnitureType] == transferRoomFurnitureCount + roomToRemoveFurnitureCount);
+            Assert.IsTrue(
+                transferRoom.Furnitures.ContainsKey(furnitureType1)
+                && transferRoom.Furnitures.ContainsKey(furnitureType2)
+                && transferRoom.Furnitures[furnitureType1] == roomToRemoveFurniture1Count
+                && transferRoom.Furnitures[furnitureType2] == roomToRemoveFurniture2Count
+            );
         }
 
         [TestMethod]
