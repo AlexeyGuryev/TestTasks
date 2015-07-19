@@ -22,7 +22,7 @@ namespace StorageLogic.Model
             Furnitures = new Dictionary<string, int>();
         }
 
-        public void AddFurniture(string furnitureType, int count = 1)
+        internal void AddFurniture(string furnitureType, int count = 1)
         {
             Furnitures = Furnitures ?? new Dictionary<string, int>();
 
@@ -36,7 +36,7 @@ namespace StorageLogic.Model
             }
         }
 
-        public void RemoveFurniture(string furnitureType, int count = 1)
+        internal void RemoveFurniture(string furnitureType, int count = 1)
         {
             Furnitures = Furnitures ?? new Dictionary<string, int>();           
 
