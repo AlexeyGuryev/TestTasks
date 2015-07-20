@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace StorageUI.Controllers
 {
-    public class HomeController : Controller
+    public class RoomController : Controller
     {
         public ActionResult Index()
         {
