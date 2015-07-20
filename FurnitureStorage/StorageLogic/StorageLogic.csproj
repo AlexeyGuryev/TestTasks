@@ -44,9 +44,11 @@
     <Compile Include="Exception\ItemAlreadyExistsException.cs" />
     <Compile Include="Exception\ItemNotFoundException.cs" />
     <Compile Include="IStorageRepository.cs" />
+    <Compile Include="Model\FurnitureAmount.cs" />
     <Compile Include="Model\Room.cs" />
     <Compile Include="Model\RoomState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\RoomFurnitureService.cs" />
     <Compile Include="Service\StorageService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
