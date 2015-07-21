@@ -14,7 +14,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                     <h4 class="modal-title" data-bind="text: DialogTitle"></h4>
                 </div>
-                <!-- ko template: { name: DialogName, data: DialogData, afterRender: DialogRendered } -->
+                <!-- ko template: { name: DialogName, data: DialogData, afterRender: DialogShow } -->
                 <!-- /ko -->
             </div>
         </div>
@@ -36,7 +36,7 @@
                         <td data-bind="text: Name"></td>
                         <td>
                             <!-- ko: if Furniture().length() > 0 -->
-                            <ul style="list-style-type: none" data-bind="foreach: Furniture">
+                            <ul style="list-style-type: none" data-bind="foreach: Furnitures">
                                 <li>
                                     <span data-bind="text: Type"></span> -
                                     <span data-bind="text: Count"></span>

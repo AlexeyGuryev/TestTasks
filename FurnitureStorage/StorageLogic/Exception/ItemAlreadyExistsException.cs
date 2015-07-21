@@ -1,7 +1,7 @@
 ﻿namespace StorageLogic.Exception
 {
-    public class ItemAlreadyExistsException : System.Exception
+    public class ItemAlreadyExistsException : StorageLogicBaseException
     {
-        public ItemAlreadyExistsException(string format, params object[] args) : base(string.Format(format, args)) { }
+        public ItemAlreadyExistsException(string format, params object[] args) : base(format, args) { }
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace StorageLogic.Exception
 {
-    public class DateConsistenceException : System.Exception
+    public class DateConsistenceException : StorageLogicBaseException
     {
-        public DateConsistenceException(string format, params object[] args) : base(string.Format(format, args)) { }
+        public DateConsistenceException(string format, params object[] args) : base(format, args) { }
     }
 }

@@ -9,7 +9,7 @@
         $scope.DialogData = ko.observable(null);
         $scope.DialogSaveModel = {};
 
-        $scope.DialogRendered = function() {
+        $scope.DialogShow = function() {
             $(".modal").modal("show");
         };
         $scope.DialogHide = function() {
@@ -22,37 +22,58 @@
             $scope.DialogName(dialogName);
         };
 
-        var DialogModel = function(data, saveAction) {
-            var me = this;
-            me.Data = data;
-            me.SaveAction = saveAction;
-        }
-
         var Room = function (data) {
             var me = this;
             me.Name = data.Name;
-            me.Furniture = ko.observableArray(data.Furniture);
+            me.Furnitures = ko.observableArray([]);
 
             me.AddFurniture = function (room) {
-                var dialogModel = new DialogModel(
-                    { 'room': room, 'message': 'none' },
-                    function (item) {
-                        alert(item.message);
-                        $scope.DialogHide();
-                    });
-                $scope.ShowDialog('addRoomDlg', 'Add room', dialogModel);
+                var dialogModel = {
+                    Room: room.Name,
+                    Date: ko.observable(new Date()),
+                    Furniture: ko.observable(''),
+
+                    SaveAction: function(item) {
+
+                        $.ajax({
+                            dataType: 'json',
+                            url: '/Room/CreateFurniture',
+                            type: "POST",
+                            data: {
+                                type: item.Furniture,
+                                roomName: item.Room,
+                                date: item.Date().toISOString()
+                            },
+                            error: function(request, error) {
+                                $scope.ConsoleLogError(error);
+                            },
+                            success: function(data) {
+                                if (data.hasOwnProperty('Error')) {
+                                    alert(data.Error);
+                                } else {
+                                    alert('FurnitureCreated!');
+                                }
+                                $scope.DialogHide();
+                            }
+                        });
+                    }
+                };
+                $scope.ShowDialog('addFurnitureToRoomDlg', room.Name + ': add furniture', dialogModel);
             };
 
             me.MoveFurniture = function (room) {
                 $scope.ShowDialog('addFurnitureToRoomDlg', {});
             }
 
-            me.RemoveRoom = function (room) {
-                $scope.ShowDialog('addRoomDlg', { 'room': room, 'message': 'none' }, function (item) {
+            me.RemoveRoom = function(room) {
+                $scope.ShowDialog('addRoomDlg', { 'room': room, 'message': 'none' }, function(item) {
                     alert(item.message);
                 });
-
             };
+
+            for (var furnitureType in data.Furnitures) {
+                me.Furnitures.push({ 'Type': furnitureType, 'Count': data.Furnitures[furnitureType] });
+            }
         }
 
         $scope.AddRoom = function () {
@@ -62,32 +83,21 @@
         $scope.SelectedRoom = ko.observable(null);
 
         $scope.InitData = function () {
-            //$scope.GlobalBusy.start();
+            var date = new Date();
             $.ajax({
                 dataType: 'json',
                 url: '/Room/RoomsByDate',
                 data: {
-                    date: new Date()
+                    date: date.toISOString()
                 },
                 error: function (request, error) {
-                    //$scope.GlobalBusy.stop();
                     $scope.ConsoleLogError(error);
                 },
-                success: function (data) {
-                    alert(data);
-                    //$scope.GlobalBusy.stop();
+                success: function (rooms) {
+                    $.each(rooms, function (index, item) {
+                        $scope.Rooms.push(new Room(item));
+                    });
                 }
-            });
-
-
-            var rooms = ([
-                { 'Name': 'Living room', 'Furniture': [{ 'Type': 'Desk', 'Count': 1 }] },
-                { 'Name': 'Bath', 'Furniture': [{ 'Type': 'Sofa', 'Count': 2 }] },
-                { 'Name': 'Kitchen', 'Furniture': [] }
-            ]);
-
-            $.each(rooms, function (index, item) {
-                $scope.Rooms.push(new Room(item));
             });
         };
 

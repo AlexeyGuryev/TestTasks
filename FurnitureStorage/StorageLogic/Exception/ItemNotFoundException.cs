@@ -1,7 +1,7 @@
 ﻿namespace StorageLogic.Exception
 {
-    public class ItemNotFoundException : System.Exception
+    public class ItemNotFoundException : StorageLogicBaseException
     {
-        public ItemNotFoundException(string format, params object[] args) : base(string.Format(format, args)) { }
+        public ItemNotFoundException(string format, params object[] args) : base(format, args) { }
     }
 }
