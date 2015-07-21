@@ -18,7 +18,7 @@ namespace StorageLogic.Test
         [ExpectedException(typeof (ItemNotFoundException))]
         public void FurnitureCreationChecksThatRoomExistsOnDate()
         {
-            var room = GetTestRoomNow();
+            var room = Service.EnsureRoom("FurnitureCreationChecksThatRoomExistsOnDate_room", DateTime.Now);
 
             var yesterdayDate = DateTime.Now.AddDays(-1);
 
@@ -29,7 +29,7 @@ namespace StorageLogic.Test
         [ExpectedException(typeof (DateConsistenceException))]
         public void FurnitureCreationDateIsLaterThanLastRoomStateDate()
         {
-            var room = GetTestRoomNow();
+            var room = Service.EnsureRoom("FurnitureCreationDateIsLaterThanLastRoomStateDate_room", DateTime.Now);
 
             var tomorrowDate = DateTime.Now.AddDays(1);
             Service.CreateFurniture("desk", room.Name, tomorrowDate);
@@ -41,7 +41,7 @@ namespace StorageLogic.Test
         public void FurnitureCreatesIfNotExists()
         {
             var furnitureType = "The unique desk";
-            var room = GetTestRoomNow();
+            var room = Service.EnsureRoom("FurnitureCreatesIfNotExists_room", DateTime.Now);
 
             Service.CreateFurniture(furnitureType, room.Name, DateTime.Now);
 
@@ -52,7 +52,7 @@ namespace StorageLogic.Test
         public void FurnitureCreationCauseIncrementCountThenItExistsInRoom()
         {
             var furnitureType = "Desk";
-            var room = GetTestRoomNow();
+            var room = Service.EnsureRoom("FurnitureCreationCauseIncrementCountThenItExistsInRoom_room", DateTime.Now);
 
             if (!room.Furnitures.ContainsKey(furnitureType))
             {
@@ -69,7 +69,7 @@ namespace StorageLogic.Test
         [TestMethod]
         public void FurnitureCreationUpdatesRoomState()
         {
-            var room = GetTestRoomNow();
+            var room = Service.EnsureRoom("FurnitureCreationUpdatesRoomState_room", DateTime.Now);
 
             var furnitureCreationDate = DateTime.Now;
             Service.CreateFurniture("desk", room.Name, furnitureCreationDate);
@@ -79,11 +79,6 @@ namespace StorageLogic.Test
             var roomStateHistory = Service.GetRoomHistory(room.Name) ?? Enumerable.Empty<RoomState>();
 
             Assert.IsTrue(roomStateHistory.Any(c => c.StateDate == furnitureCreationDate));
-        }
-
-        private Room GetTestRoomNow()
-        {
-            return Service.EnsureRoom("Living room", DateTime.Now);
         }
     }
 }

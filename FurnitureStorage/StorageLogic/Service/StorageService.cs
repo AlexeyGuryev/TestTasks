@@ -11,12 +11,7 @@ namespace StorageLogic.Service
     /// </summary>
     public class StorageService
     {
-        private readonly IStorageRepository _repository = null;
-
-        public List<Room> Rooms
-        {
-            get { return _repository.Rooms; }
-        }
+        private readonly IStorageRepository _repository = null;       
 
         public StorageService(IStorageRepository repository)
         {
@@ -25,30 +20,15 @@ namespace StorageLogic.Service
 
         public Room CreateRoom(string roomName, DateTime creationDate)
         {
-            var existRoom = Rooms.FirstOrDefault(c => c.Name == roomName);
-            if (existRoom == null)
-            {
-                var newRoom = _repository.CreateRoom(roomName, creationDate);
-                AddRoomStateIfChanged(newRoom, creationDate);
-                return newRoom;
-            }
-            else
-            {
-                throw new ItemAlreadyExistsException("Room with name {0} already exists", roomName);
-            }
+            var newRoom = _repository.CreateRoom(roomName, creationDate);
+            _repository.AddRoomState(newRoom, creationDate);
+            return newRoom;
         }
 
         public Room EnsureRoom(string roomName, DateTime creationDate)
         {
-            var room = Rooms.FirstOrDefault(c => c.Name == roomName);
-            if (room == null)
-            {
-                return CreateRoom(roomName, creationDate);
-            }
-            else
-            {
-                return room;
-            }
+            var room = _repository.GetRoomByName(roomName);
+            return room ?? CreateRoom(roomName, creationDate);
         }
 
         public void RemoveRoom(string roomName, string transferRoomName, DateTime removeDate) 
@@ -59,30 +39,11 @@ namespace StorageLogic.Service
             CheckIfRoomStateIsLatest(roomToRemove, removeDate);
             CheckIfRoomStateIsLatest(transferRoom, removeDate);
 
-            var furnitures = roomToRemove.Furnitures.Keys.ToList();
-            foreach (var furniture in furnitures)
-            {
-                var countValue = roomToRemove.Furnitures[furniture];
-                transferRoom.AddFurniture(furniture, countValue);
-                roomToRemove.RemoveFurniture(furniture, countValue);
-            }
+            MoveFurnitureBetweenRooms(roomToRemove, transferRoom);
             roomToRemove.RemoveDate = removeDate;
 
-            AddRoomStateIfChanged(roomToRemove, removeDate);
-            AddRoomStateIfChanged(transferRoom, removeDate);
-        }
-
-        private void AddRoomStateIfChanged(Room room, DateTime newStateDate)
-        {
-            var lastRoomState = _repository.GetLatestRoomState(room.Name, newStateDate);
-            if (lastRoomState != null)
-            {
-                if (room.Equals(lastRoomState.Room))
-                {
-                    return;
-                }
-            }
-            _repository.AddRoomState(room, newStateDate);
+            _repository.AddRoomState(roomToRemove, removeDate);
+            _repository.AddRoomState(transferRoom, removeDate);
         }
 
         public void CreateFurniture(string furnitureType, string roomName, DateTime createFurnitureDate)
@@ -91,13 +52,55 @@ namespace StorageLogic.Service
             CheckIfRoomStateIsLatest(room, createFurnitureDate);
 
             room.AddFurniture(furnitureType);
-            AddRoomStateIfChanged(room, createFurnitureDate);
+            _repository.AddRoomState(room, createFurnitureDate);
         }
+
+        public void MoveFurniture(string furnitureType, string roomNameFrom, string roomNameTo,
+            DateTime moveFurnitureDate)
+        {
+            var roomFrom = GetRoom(roomNameFrom, moveFurnitureDate);
+            var roomTo = GetRoom(roomNameTo, moveFurnitureDate);
+
+            CheckIfRoomStateIsLatest(roomFrom, moveFurnitureDate);
+            CheckIfRoomStateIsLatest(roomTo, moveFurnitureDate);
+
+            if (roomFrom.Furnitures.ContainsKey(furnitureType)
+                && roomFrom.Furnitures[furnitureType] > 0)
+            {
+                roomTo.AddFurniture(furnitureType);
+                roomFrom.RemoveFurniture(furnitureType);
+
+                _repository.AddRoomState(roomFrom, moveFurnitureDate);
+                _repository.AddRoomState(roomTo, moveFurnitureDate);
+            }
+            else
+            {
+                throw new ItemNotFoundException("The furniture of type {0} is not exists in room {1}",
+                    furnitureType, roomFrom);
+            }
+        }
+
+        public List<Room> QueryRooms(DateTime? queryDate)
+        {
+            return _repository.GetRoomsWithStateOnDate(queryDate);
+        }
+
+        public List<RoomState> GetHistory()
+        {
+            return _repository.GetAllRoomStates();
+        }
+
+        public List<RoomState> GetRoomHistory(string roomName)
+        {
+            return _repository.GetRoomStates(roomName);
+        }
+
+        #region util methods
 
         private Room GetRoom(string roomName, DateTime? date = null)
         {
-            var room = Rooms.FirstOrDefault(c => c.Name == roomName && (c.CreationDate <= date || date == null));
-            if (room != null)
+            var room = _repository.GetRoomByName(roomName);
+            if (room != null && (room.CreationDate <= date || date == null))
             {
                 return room;
             }
@@ -117,55 +120,20 @@ namespace StorageLogic.Service
             }
         }
 
-        public void MoveFurniture(string furnitureType, string roomNameFrom, string roomNameTo,
-            DateTime moveFurnitureDate)
+        private void MoveFurnitureBetweenRooms(Room roomFrom, Room roomTo, string furnitureTypeToMove = null)
         {
-            var roomFrom = GetRoom(roomNameFrom, moveFurnitureDate);
-            var roomTo = GetRoom(roomNameTo, moveFurnitureDate);
-
-            CheckIfRoomStateIsLatest(roomFrom, moveFurnitureDate);
-            CheckIfRoomStateIsLatest(roomTo, moveFurnitureDate);
-
-            if (roomFrom.Furnitures.ContainsKey(furnitureType)
-                && roomFrom.Furnitures[furnitureType] > 0)
+            var furnitures = roomFrom.Furnitures.Keys.ToList();
+            foreach (var furniture in furnitures)
             {
-                roomTo.AddFurniture(furnitureType);
-                roomFrom.RemoveFurniture(furnitureType);
-
-                AddRoomStateIfChanged(roomFrom, moveFurnitureDate);
-                AddRoomStateIfChanged(roomTo, moveFurnitureDate);
-            }
-            else
-            {
-                throw new ItemNotFoundException("The furniture of type {0} is not exists in room {1}",
-                    furnitureType, roomFrom);
-            }            
-        }
-
-        public List<Room> QueryRooms(DateTime queryDate)
-        {
-            var roomsInState = new List<Room>();
-            foreach (var room in Rooms)
-            {
-                var roomState = _repository.GetLatestRoomState(room.Name, queryDate);
-                if (roomState != null)
+                if (string.IsNullOrEmpty(furnitureTypeToMove) || furnitureTypeToMove == furniture)
                 {
-                    roomsInState.Add(roomState.Room);
+                    var countValue = roomFrom.Furnitures[furniture];
+                    roomTo.AddFurniture(furniture, countValue);
+                    roomFrom.RemoveFurniture(furniture, countValue);
                 }
             }
-            return roomsInState;
         }
 
-        public List<RoomState> GetHistory()
-        {
-            return _repository.RoomStates;
-        }
-
-        public List<RoomState> GetRoomHistory(string roomName)
-        {
-            return _repository.RoomStates
-                .Where(c => c.Room.Name == roomName)
-                .ToList();
-        }
+        #endregion
     }
 }

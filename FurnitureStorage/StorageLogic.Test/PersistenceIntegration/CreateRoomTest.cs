@@ -14,20 +14,6 @@ namespace StorageLogic.Test
     public class CreateRoomTest : StorageBaseTest
     {
         [TestMethod]
-        public void CreateRoomIncreasesAllRoomsCount()
-        {
-            var previousRoomCount =
-                (Service.Rooms ?? Enumerable.Empty<Room>()).Count();
-
-            Service.EnsureRoom("Yet another room", DateTime.Now);
-
-            var newRoomCount =
-                (Service.Rooms ?? Enumerable.Empty<Room>()).Count();
-
-            Assert.AreEqual(previousRoomCount + 1, newRoomCount);
-        }
-
-        [TestMethod]
         [ExpectedException(typeof (ItemAlreadyExistsException))]
         public void CreateNonUniqueRoomThrowsException()
         {

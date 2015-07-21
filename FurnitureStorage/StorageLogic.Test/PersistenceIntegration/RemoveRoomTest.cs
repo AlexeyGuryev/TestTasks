@@ -39,10 +39,10 @@ namespace StorageLogic.Test
         {
             var yesterdayDate = DateTime.Now.AddDays(-1);
 
-            var roomToRemove = GetTestRoom(yesterdayDate);
+            var roomToRemove = Service.EnsureRoom("RemoveRoomChecksThatDateIsLaterThanLastRoomStateDate_Room", yesterdayDate);
             Service.CreateFurniture("Table", roomToRemove.Name, DateTime.Now);
 
-            var transferRoom = GetRoomWithFurniture(yesterdayDate);
+            var transferRoom = GetRoomWithFurniture(yesterdayDate, "Desk", "RemoveRoomChecksThatDateIsLaterThanLastRoomStateDate_Bath");
 
             Service.RemoveRoom(roomToRemove.Name, transferRoom.Name, yesterdayDate);
         }
@@ -106,10 +106,10 @@ namespace StorageLogic.Test
             return Service.EnsureRoom("Living room", date);
         }
 
-        private Room GetRoomWithFurniture(DateTime date, string furnitureType = "Bath")
+        private Room GetRoomWithFurniture(DateTime date, string furnitureType = "Desk", string roomName = "Bath")
         {
-            var room = Service.EnsureRoom(furnitureType, date);
-            Service.CreateFurniture("Desk", room.Name, date);
+            var room = Service.EnsureRoom(roomName, date);
+            Service.CreateFurniture(furnitureType, room.Name, date);
             return room;
         }
     }

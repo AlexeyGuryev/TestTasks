@@ -40,8 +40,8 @@ namespace StorageLogic.Test
         {
             var yesterdayDate = DateTime.Now.AddDays(-1);
 
-            var roomFrom = Service.EnsureRoom("Bath", yesterdayDate);
-            var roomTo = Service.EnsureRoom("Living room", yesterdayDate);
+            var roomFrom = Service.EnsureRoom("FurnitureMoveDateIsLaterThanLastDestionationRoomStateDate_Bath", yesterdayDate);
+            var roomTo = Service.EnsureRoom("FurnitureMoveDateIsLaterThanLastDestionationRoomStateDate_LivingRoom", yesterdayDate);
 
             Service.CreateFurniture("Desk", roomTo.Name, DateTime.Now);
 
@@ -54,8 +54,8 @@ namespace StorageLogic.Test
         {
             var yesterdayDate = DateTime.Now.AddDays(-1);
 
-            var roomFrom = Service.EnsureRoom("Bath", yesterdayDate);
-            var roomTo = Service.EnsureRoom("Living room", yesterdayDate);
+            var roomFrom = Service.EnsureRoom("FurnitureMoveDateIsLaterThanLastSourceRoomStateDate_Bath", yesterdayDate);
+            var roomTo = Service.EnsureRoom("FurnitureMoveDateIsLaterThanLastSourceRoomStateDate_LivingRoom", yesterdayDate);
 
             Service.CreateFurniture("Desk", roomFrom.Name, DateTime.Now);
 
@@ -86,8 +86,8 @@ namespace StorageLogic.Test
         public void FurnitureMoveCauseUpdateRoomsFurnitureLists()
         {
             var furnitureType = "desk";
-            var roomFrom = Service.EnsureRoom("Bath", DateTime.Now);
-            var roomTo = Service.EnsureRoom("Living room", DateTime.Now);
+            var roomFrom = Service.EnsureRoom("FurnitureMoveCauseUpdateRoomsFurnitureLists_Bath", DateTime.Now);
+            var roomTo = Service.EnsureRoom("FurnitureMoveCauseUpdateRoomsFurnitureLists_LivingRoom", DateTime.Now);
 
             Service.CreateFurniture(furnitureType, roomFrom.Name, DateTime.Now);
 
