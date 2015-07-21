@@ -167,6 +167,16 @@
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StorageLogic\StorageLogic.csproj">
+      <Project>{e2a9eef7-4ee9-46be-8a87-6db168198eaa}</Project>
+      <Name>StorageLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StoragePersistence\StoragePersistence.csproj">
+      <Project>{02d3065f-0769-4925-88c1-180885bc6938}</Project>
+      <Name>StoragePersistence</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
