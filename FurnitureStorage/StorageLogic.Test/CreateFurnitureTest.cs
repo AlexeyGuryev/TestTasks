@@ -73,6 +73,8 @@ namespace StorageLogic.Test
 
             var furnitureCreationDate = DateTime.Now;
             Service.CreateFurniture("desk", room.Name, furnitureCreationDate);
+            Service.CreateFurniture("desk", room.Name, furnitureCreationDate);
+            Service.CreateFurniture("desk", room.Name, furnitureCreationDate);
 
             var roomStateHistory = Service.GetRoomHistory(room.Name) ?? Enumerable.Empty<RoomState>();
 

@@ -72,16 +72,17 @@ namespace StorageLogic.Service
             AddRoomStateIfChanged(transferRoom, removeDate);
         }
 
-        // todo implement room state comparing
         private void AddRoomStateIfChanged(Room room, DateTime newStateDate)
         {
-            //var lastRoomState = _repository.GetLatestRoomState(room.Name, newStateDate);
-
-            //if (lastRoomState != null)
-            //{
-                //if (room.CheckEqualRoom())
-                _repository.AddRoomState(room, newStateDate);
-            //}
+            var lastRoomState = _repository.GetLatestRoomState(room.Name, newStateDate);
+            if (lastRoomState != null)
+            {
+                if (room.Equals(lastRoomState.Room))
+                {
+                    return;
+                }
+            }
+            _repository.AddRoomState(room, newStateDate);
         }
 
         public void CreateFurniture(string furnitureType, string roomName, DateTime createFurnitureDate)
