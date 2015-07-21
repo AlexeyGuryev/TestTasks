@@ -24,7 +24,7 @@ namespace StorageLogic.Model
                 Name = room.Name,
                 CreationDate = room.CreationDate,
                 RemoveDate = room.RemoveDate,
-                Furnitures = room.Furnitures.ToDictionary(c => c.Key, c => c.Value)
+                FurnitureList = room.FurnitureList.ToList()
             };
             StateDate = state;
         }

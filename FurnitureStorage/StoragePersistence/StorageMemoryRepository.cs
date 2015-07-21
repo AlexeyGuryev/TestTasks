@@ -23,7 +23,7 @@ namespace StoragePersistence
             {
                 Name = name,
                 CreationDate = creationDate,
-                Furnitures = new Dictionary<string, int>()
+                FurnitureList = new List<string>()
             };
             Rooms.Add(newRoom);
             return newRoom;

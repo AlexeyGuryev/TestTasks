@@ -46,9 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="StorageContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StorageDBRepository.cs" />
     <Compile Include="StorageMemoryRepository.cs" />
   </ItemGroup>
   <ItemGroup>

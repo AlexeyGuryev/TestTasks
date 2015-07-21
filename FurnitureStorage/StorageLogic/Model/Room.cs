@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using StorageLogic.Exception;
+using System.Linq;
 
 namespace StorageLogic.Model
 {
@@ -15,43 +15,45 @@ namespace StorageLogic.Model
 
         public DateTime? RemoveDate { get; set; }
 
-        public Dictionary<string, int> Furnitures { get; set; }
+        public List<string> FurnitureList { get; set; }
 
-        public Room()
+        /// <summary>
+        /// HACK: изначально логика и тесты были написаны под dictionary
+        /// для экономии времени использовал get-проперти вместо переделки логики
+        /// </summary>
+        public Dictionary<string, int> Furnitures
         {
-            Furnitures = new Dictionary<string, int>();
+            get
+            {
+                var list = FurnitureList ?? Enumerable.Empty<string>();
+                return list
+                    .GroupBy(c => c)
+                    .ToDictionary(key => key.Key, value => value.Count());
+            }
         }
 
         internal void AddFurniture(string furnitureType, int count = 1)
         {
-            Furnitures = Furnitures ?? new Dictionary<string, int>();
-
-            if (Furnitures.ContainsKey(furnitureType))
-            {
-                Furnitures[furnitureType] += count;
-            }
-            else
-            {
-                Furnitures.Add(furnitureType, count);
-            }
+            FurnitureList.AddRange(
+                Enumerable.Repeat(furnitureType, count));
         }
 
         internal void RemoveFurniture(string furnitureType, int count = 1)
         {
-            Furnitures = Furnitures ?? new Dictionary<string, int>();           
-
-            if (Furnitures.ContainsKey(furnitureType))
+            if (count < FurnitureList.Count())
             {
-                Furnitures[furnitureType] -= count;
-                if (Furnitures[furnitureType] <= 0)
+                var listItemsByTypeCopy = FurnitureList.Where(c => c == furnitureType).ToList();
+                foreach (var listItem in listItemsByTypeCopy)
                 {
-                    Furnitures.Remove(furnitureType);
+                    if (listItem == furnitureType)
+                    {
+                        FurnitureList.Remove(furnitureType);
+                    }
                 }
             }
             else
             {
-                throw new ItemNotFoundException("Furniture with type {0} was not found in room {1}",
-                    furnitureType, this.Name);
+                FurnitureList.RemoveAll(c => c == furnitureType);
             }
         }
     }
