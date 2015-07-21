@@ -2,11 +2,11 @@
     <div class="modal-body">
         <div class="form-group">
             <label for="room-name-input">Room name</label>
-            <input type="text" class="form-control" id="room-name-input" placeholder="Room name">
+            <input type="text" class="form-control" id="room-name-input" placeholder="Room name" data-bind="value: Room">
         </div>
         <div class="form-group">
             <label for="room-creation-date">Creation date</label>
-            <input type="date" class="form-control" id="room-creation-date" placeholder="Creation date" />
+            <input type="date" class="form-control" id="room-creation-date" data-bind="text: CreationDate" disabled />
         </div>
     </div>
     <div class="modal-footer">
@@ -21,10 +21,10 @@
             <label for="room-name-input">Furniture type</label>
             <input type="text" class="form-control" id="room-name-input" placeholder="Furniture type" data-bind="value: Furniture">
         </div>
-        @*<div class="form-group">
-            <label for="room-creation-date">Creation date</label>
-            <input type="date" class="form-control" id="room-creation-date" placeholder="Creation date" />
-        </div>*@
+        <div class="form-group">
+            <label for="furniture-creation-date">Creation date</label>
+            <input type="datetime" class="form-control" id="furniture-creation-date" data-bind="text: CreationDate" disabled/>
+        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-bind="click: SaveAction">Save</button>
@@ -36,15 +36,19 @@
     <div class="modal-body">
         <div class="form-group">
             <label for="room-name-input">Room name</label>
-            <select class="form-control" data-bind="options: $root.Rooms, optionsText: 'Name', value: SelectedRoom, optionsCaption: 'Choose...'"></select>
+            <select class="form-control" data-bind="options: Rooms, optionsText: 'Name', value: RoomTo, optionsCaption: 'Choose...'"></select>
+        </div>
+        <div class="form-group">
+            <label for="room-name-input">Furniture type</label>            
+            <select class="form-control" data-bind="options: Room.Furnitures, optionsText: 'Type', value: Furniture, optionsCaption: 'Choose...'"></select>            
         </div>
         <div class="form-group">
             <label for="room-move-date">Move date</label>
-            <input type="date" class="form-control" id="room-move-date" placeholder="Move date" />
+            <input type="date" class="form-control" id="room-move-date" data-bind="text: MoveDate" disabled />
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-primary" data-bind="click: SaveAction">Save</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
     </div>
 </script>
@@ -53,15 +57,15 @@
     <div class="modal-body">
         <div class="form-group">
             <label for="room-name-input">Room name to transfer</label>
-            <select class="form-control" data-bind="options: Rooms, optionsText: 'Name', value: SelectedRoom, optionsCaption: 'Choose...'"></select>
+            <select class="form-control" data-bind="options: Rooms, optionsText: 'Name', value: RoomTo, optionsCaption: 'Choose...'"></select>
         </div>
         <div class="form-group">
             <label for="room-move-date">Remove date</label>
-            <input type="date" class="form-control" id="room-move-date" placeholder="Remove date" />
+            <input type="date" class="form-control" id="room-move-date" data-bind="text: RemoveDate" disabled />
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-primary" data-bind="click: SaveAction">Save</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
     </div>
 </script>

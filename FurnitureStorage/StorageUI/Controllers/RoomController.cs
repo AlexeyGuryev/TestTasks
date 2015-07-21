@@ -13,11 +13,6 @@ namespace StorageUI.Controllers
         public RoomController(IStorageRepository repository)
         {
             _service = new StorageService(repository);
-            var aroom = _service.EnsureRoom("Living room", DateTime.Now);
-            _service.CreateFurniture("Desk", aroom.Name, DateTime.Now);
-            _service.CreateFurniture("Chair", aroom.Name, DateTime.Now);
-            var broom = _service.EnsureRoom("Bathroom", DateTime.Now);
-            _service.CreateFurniture("Desk", broom.Name, DateTime.Now);
         }
 
         public ActionResult Index()
@@ -44,7 +39,7 @@ namespace StorageUI.Controllers
         public JsonResult RemoveRoom(string roomName, string transfer, DateTime? date)
         {
             _service.RemoveRoom(roomName, transfer, date ?? DateTime.Now);
-            return null;
+            return Ok;
         }
 
         [HttpPost]
@@ -52,7 +47,7 @@ namespace StorageUI.Controllers
         public JsonResult CreateFurniture(string type, string roomName, DateTime? date)
         {
             _service.CreateFurniture(type, roomName, date ?? DateTime.Now);
-            return null;
+            return Ok;
         }
 
         [HttpPost]
@@ -60,7 +55,9 @@ namespace StorageUI.Controllers
         public JsonResult MoveFurniture(string type, string roomNameFrom, string roomNameTo, DateTime? date)
         {
             _service.MoveFurniture(type, roomNameFrom, roomNameTo, date ?? DateTime.Now);
-            return null;
+            return Ok;
         }
+
+        private JsonResult Ok { get { return Json(new { IsOk = true }); } }
     }
 }

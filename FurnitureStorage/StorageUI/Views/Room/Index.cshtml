@@ -8,19 +8,23 @@
 
 <div id="room-bindable-block">
     <div class="modal">
-        <div class="modal-dialog" data-bind="if: DialogName()">
+        <div class="modal-dialog">
+            <!-- ko if: DialogName() -->
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                     <h4 class="modal-title" data-bind="text: DialogTitle"></h4>
+                    <span class="label label-danger" data-bind="text: DialogErrorText"></span>
                 </div>
                 <!-- ko template: { name: DialogName, data: DialogData, afterRender: DialogShow } -->
                 <!-- /ko -->
             </div>
+            <!-- /ko -->
         </div>
     </div>
 
     <div class="row">
+        <h1>Rooms and Furnitures</h1>
         <div class="col-md-12" style="display: none" data-bind="visible: Rooms().length > 0">
             <table class="table table-condensed table-striped table-hover">
                 <thead>
@@ -46,7 +50,7 @@
                         </td>
                         <td>
                             <a class="btn btn-primary" href="javascrip:void(0);" data-bind="click: AddFurniture">Add furniture</a>
-                            <a class="btn btn-default" href="javascrip:void(0);" data-bind="click: MoveFurniture">Move furniture</a>
+                            <a class="btn btn-default" href="javascrip:void(0);" data-bind="click: MoveFurniture, visible: $root.Rooms().length > 1">Move furniture</a>
                             <a class="btn btn-danger" href="javascrip:void(0);" data-bind="click: RemoveRoom">Remove room</a>
                         </td>
                     </tr>

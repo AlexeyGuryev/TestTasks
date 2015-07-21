@@ -6,6 +6,7 @@
 
         $scope.DialogName = ko.observable('');
         $scope.DialogTitle = ko.observable('');
+        $scope.DialogErrorText = ko.observable('');
         $scope.DialogData = ko.observable(null);
         $scope.DialogSaveModel = {};
 
@@ -14,12 +15,101 @@
         };
         $scope.DialogHide = function() {
             $(".modal").modal("hide");
+            $scope.DialogName('');
         }
 
         $scope.ShowDialog = function (dialogName, dialogTitle, model) {
             $scope.DialogData(model);
             $scope.DialogTitle(dialogTitle);
             $scope.DialogName(dialogName);
+        };
+
+        var MoveDialog = function (room) {
+            var $scopeDialog = this;
+
+            $scopeDialog.Room = room;
+            $scopeDialog.RoomTo = ko.observable('');
+            $scopeDialog.MoveDate = ko.observable(new Date());
+
+            $scopeDialog.Furniture = ko.observable('');
+            $scopeDialog.Rooms = ko.computed(function (item) {
+                return $.grep($scope.Rooms(), function (room) {
+                    return room.Name != $scopeDialog.Room.Name;
+                });
+            });
+
+            // todo date from picker
+            $scopeDialog.SaveAction = function (item) {
+                if (!item.RoomTo() || !item.Furniture()) {
+                    return;
+                }
+
+                $.ajax({
+                    dataType: 'json',
+                    url: '/Room/MoveFurniture',
+                    type: "POST",
+                    data: {
+                        type: item.Furniture().Type,
+                        roomNameFrom: item.Room.Name,
+                        roomNameTo: item.RoomTo().Name,
+                        date: item.MoveDate().toISOString()
+                    },
+                    error: function (request, error) {
+                        $scope.ConsoleLogError(error);
+                    },
+                    success: function (data) {
+                        if (data.hasOwnProperty('Error')) {
+                            $scope.DialogErrorText(data.Error);
+                        } else {
+                            $scope.DialogHide();
+                            $scope.UpdateRoomList();
+                        }
+                    }
+                });
+            }            
+        };
+
+        var RemoveDialog = function (room) {
+            var $scopeDialog = this;
+
+            $scopeDialog.Room = room;
+            $scopeDialog.RoomTo = ko.observable('');
+            $scopeDialog.RemoveDate = ko.observable(new Date());
+
+            $scopeDialog.Rooms = ko.computed(function (item) {
+                return $.grep($scope.Rooms(), function (room) {
+                    return room.Name != $scopeDialog.Room.Name;
+                });
+            });
+
+            // todo date from picker
+            $scopeDialog.SaveAction = function (item) {
+                if (!item.RoomTo()) {
+                    return;
+                }
+
+                $.ajax({
+                    dataType: 'json',
+                    url: '/Room/RemoveRoom',
+                    type: "POST",
+                    data: {
+                        roomName: item.Room.Name,
+                        transfer: item.RoomTo().Name,
+                        date: item.RemoveDate().toISOString()
+                    },
+                    error: function (request, error) {
+                        $scope.ConsoleLogError(error);
+                    },
+                    success: function (data) {
+                        if (data.hasOwnProperty('Error')) {
+                            $scope.DialogErrorText(data.Error);
+                        } else {
+                            $scope.DialogHide();
+                            $scope.UpdateRoomList();
+                        }
+                    }
+                });
+            }
         };
 
         var Room = function (data) {
@@ -30,30 +120,30 @@
             me.AddFurniture = function (room) {
                 var dialogModel = {
                     Room: room.Name,
-                    Date: ko.observable(new Date()),
-                    Furniture: ko.observable(''),
+                    CreationDate: ko.observable(new Date()),
+                    Furniture: ko.observable(''),                    
 
+                    // todo date from picker
                     SaveAction: function(item) {
-
                         $.ajax({
                             dataType: 'json',
                             url: '/Room/CreateFurniture',
                             type: "POST",
                             data: {
-                                type: item.Furniture,
+                                type: item.Furniture(),
                                 roomName: item.Room,
-                                date: item.Date().toISOString()
+                                date: item.CreationDate().toISOString()
                             },
                             error: function(request, error) {
                                 $scope.ConsoleLogError(error);
                             },
                             success: function(data) {
                                 if (data.hasOwnProperty('Error')) {
-                                    alert(data.Error);
+                                    $scope.DialogErrorText(data.Error);
                                 } else {
-                                    alert('FurnitureCreated!');
+                                    $scope.DialogHide();
+                                    $scope.UpdateRoomList();
                                 }
-                                $scope.DialogHide();
                             }
                         });
                     }
@@ -62,13 +152,13 @@
             };
 
             me.MoveFurniture = function (room) {
-                $scope.ShowDialog('addFurnitureToRoomDlg', {});
+                var dialogModel = new MoveDialog(room);
+                $scope.ShowDialog('moveToRoomDlg', room.Name + ': move furniture', dialogModel);
             }
 
-            me.RemoveRoom = function(room) {
-                $scope.ShowDialog('addRoomDlg', { 'room': room, 'message': 'none' }, function(item) {
-                    alert(item.message);
-                });
+            me.RemoveRoom = function (room) {
+                var dialogModel = new RemoveDialog(room);
+                $scope.ShowDialog('removeRoomDlg', 'Remove room ' + room.Name, dialogModel);
             };
 
             for (var furnitureType in data.Furnitures) {
@@ -77,12 +167,45 @@
         }
 
         $scope.AddRoom = function () {
-            $("#addRoomDlg").modal("show");
+            var dialogModel = {
+                Room: ko.observable(''),
+                CreationDate: ko.observable(new Date()),
+
+                // todo date from picker
+                SaveAction: function (item) {
+                    $.ajax({
+                        dataType: 'json',
+                        url: '/Room/CreateRoom',
+                        type: "POST",
+                        data: {
+                            roomName: item.Room,
+                            date: item.CreationDate().toISOString()
+                        },
+                        error: function (request, error) {
+                            $scope.ConsoleLogError(error);
+                        },
+                        success: function (data) {
+                            if (data.hasOwnProperty('Error')) {
+                                $scope.DialogErrorText(data.Error);
+                            } else {
+                                $scope.DialogHide();
+                                $scope.UpdateRoomList();
+                            }
+                        }
+                    });
+                }
+            };
+            $scope.ShowDialog('addRoomDlg', 'Add room', dialogModel);
         };
 
         $scope.SelectedRoom = ko.observable(null);
 
         $scope.InitData = function () {
+            $scope.UpdateRoomList();
+        };
+
+        $scope.UpdateRoomList = function () {
+            // todo date from picker
             var date = new Date();
             $.ajax({
                 dataType: 'json',
@@ -94,9 +217,11 @@
                     $scope.ConsoleLogError(error);
                 },
                 success: function (rooms) {
+                    var updatedRooms = [];
                     $.each(rooms, function (index, item) {
-                        $scope.Rooms.push(new Room(item));
+                        updatedRooms.push(new Room(item));
                     });
+                    $scope.Rooms(updatedRooms);
                 }
             });
         };
