@@ -1,0 +1,67 @@
+﻿<script type="text/html" id="addRoomDlg">
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="room-name-input">Room name</label>
+            <input type="text" class="form-control" id="room-name-input" placeholder="Room name">
+        </div>
+        <div class="form-group">
+            <label for="room-creation-date">Creation date</label>
+            <input type="date" class="form-control" id="room-creation-date" placeholder="Creation date" />
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bind="click: SaveAction">Save</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+</script>
+
+<script type="text/html" id="addFurnitureToRoomDlg">
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="room-name-input">Furniture type</label>
+            <input type="text" class="form-control" id="room-name-input" placeholder="Furniture type">
+        </div>
+        <div class="form-group">
+            <label for="room-creation-date">Creation date</label>
+            <input type="date" class="form-control" id="room-creation-date" placeholder="Creation date" />
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+</script>
+
+<script type="text/html" id="moveToRoomDlg">
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="room-name-input">Room name</label>
+            <select class="form-control" data-bind="options: $root.Rooms, optionsText: 'Name', value: SelectedRoom, optionsCaption: 'Choose...'"></select>
+        </div>
+        <div class="form-group">
+            <label for="room-move-date">Move date</label>
+            <input type="date" class="form-control" id="room-move-date" placeholder="Move date" />
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+</script>
+
+<script type="text/html" id="removeRoomDlg">
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="room-name-input">Room name to transfer</label>
+            <select class="form-control" data-bind="options: Rooms, optionsText: 'Name', value: SelectedRoom, optionsCaption: 'Choose...'"></select>
+        </div>
+        <div class="form-group">
+            <label for="room-move-date">Remove date</label>
+            <input type="date" class="form-control" id="room-move-date" placeholder="Remove date" />
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+</script>

@@ -4,26 +4,58 @@
 
         $scope.Rooms = ko.observableArray([]);
 
+        $scope.DialogName = ko.observable('');
+        $scope.DialogTitle = ko.observable('');
+        $scope.DialogData = ko.observable(null);
+        $scope.DialogSaveModel = {};
+        $scope.DialogRendered = function() {
+            $(".modal").modal("show");
+        };
+        $scope.DialogHide = function() {
+            $(".modal").modal("hide");
+        }
+
+        $scope.ShowDialog = function (dialogName, dialogTitle, model) {
+            $scope.DialogData(model);
+            $scope.DialogTitle(dialogTitle);
+            $scope.DialogName(dialogName);
+        };
+
+        var DialogModel = function(data, saveAction) {
+            var me = this;
+            me.Data = data;
+            me.SaveAction = saveAction;
+        }
+
         var Room = function (data) {
             var me = this;
             me.Name = data.Name;
             me.Furniture = ko.observableArray(data.Furniture);
 
             me.AddFurniture = function (room) {
-                $("#addRoomDlg").modal("show");
+                var dialogModel = new DialogModel(
+                    { 'room': room, 'message': 'none' },
+                    function (item) {
+                        alert(item.message);
+                        $scope.DialogHide();
+                    });
+                $scope.ShowDialog('addRoomDlg', 'Add room', dialogModel);
             };
 
             me.MoveFurniture = function (room) {
-                $("#moveToRoomDlg").modal("show");
+                $scope.ShowDialog('addFurnitureToRoomDlg', {});
             }
 
             me.RemoveRoom = function (room) {
-                alert(room.Name);
+                $scope.ShowDialog('addRoomDlg', { 'room': room, 'message': 'none' }, function (item) {
+                    alert(item.message);
+                });
+
             };
         }
 
         $scope.AddRoom = function () {
-            alert('addRoom!');
+            $("#addRoomDlg").modal("show");
         };
 
         $scope.SelectedRoom = ko.observable(null);

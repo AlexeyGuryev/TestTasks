@@ -1,60 +1,27 @@
 ﻿@section scripts {
     @Scripts.Render("~/bundles/room")
 }
-<div id="room-bindable-block">
-    <div id="addRoomDlg" class="modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dissmiss="modal" aria-hidden="true">x</button>
-                    <h4 class="modal-title">Add room</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="room-name-input">Room name</label>
-                        <input type="text" class="form-control" id="room-name-input" placeholder="Room name">
-                    </div>
-                    <div class="form-group">
-                        <label for="room-creation-date">Creation date</label>
-                        <input type="date" class="form-control" id="room-creation-date" placeholder="Creation date" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Save</button>
-                    <button type="button" class="btn btn-default" data-dissmiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div id="moveToRoomDlg" class="modal">
-        <div class="modal-dialog">
+@{
+    Html.RenderPartial("_Dialogs");
+}
+
+<div id="room-bindable-block">
+    <div class="modal">
+        <div class="modal-dialog" data-bind="if: DialogName()">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dissmiss="modal" aria-hidden="true">x</button>
-                    <h4 class="modal-title">Move furniture to room</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                    <h4 class="modal-title" data-bind="text: DialogTitle"></h4>
                 </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="room-name-input">Room name</label>
-                        <select class="form-control" data-bind="options: Rooms, optionsText: 'Name', value: SelectedRoom, optionsCaption: 'Choose...'"></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="room-move-date">Move date</label>
-                        <input type="date" class="form-control" id="room-move-date" placeholder="Creation date" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Save</button>
-                    <button type="button" class="btn btn-default" data-dissmiss="modal">Close</button>
-                </div>
+                <!-- ko template: { name: DialogName, data: DialogData, afterRender: DialogRendered } -->
+                <!-- /ko -->
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-12">
-            <!-- ko if: Rooms().length > 0 -->
+        <div class="col-md-12" style="display: none" data-bind="visible: Rooms().length > 0">
             <table class="table table-condensed table-striped table-hover">
                 <thead>
                     <tr>
@@ -64,13 +31,14 @@
                     </tr>
                 </thead>
                 <tbody data-bind="foreach: Rooms">
-                @*<tr data-bind="css: {'success': $index() % 2 === 0}">*@
+                    @*<tr data-bind="css: {'success': $index() % 2 === 0}">*@
                     <tr>
                         <td data-bind="text: Name"></td>
                         <td>
                             <!-- ko: if Furniture().length() > 0 -->
                             <ul style="list-style-type: none" data-bind="foreach: Furniture">
-                                <li><span data-bind="text: Type"></span> -
+                                <li>
+                                    <span data-bind="text: Type"></span> -
                                     <span data-bind="text: Count"></span>
                                 </li>
                             </ul>
@@ -84,7 +52,6 @@
                     </tr>
                 </tbody>
             </table>
-            <!-- /ko -->
         </div>
     </div>
     <div class="row">
