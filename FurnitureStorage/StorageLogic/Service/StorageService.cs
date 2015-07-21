@@ -113,7 +113,7 @@ namespace StorageLogic.Service
 
         private void CheckIfRoomStateIsLatest(Room room, DateTime date)
         {
-            var latestState = _repository.GetLatestRoomState(room.Name, DateTime.MaxValue);
+            var latestState = _repository.GetLatestRoomState(room.Name, null);
             if (latestState.StateDate > date)
             {
                 throw new DateConsistenceException("There is later changes for room {0}", room.Name);
