@@ -14,16 +14,15 @@
         //$scope.RoomHistoryItems = ko.observableArray([]);
         $scope.ShowShortHistory = ko.observable(false);
         $scope.RoomHistoryItems = ko.observableArray([]);
-        $scope.ShowShortHistory.subscribe(function () {
+        $scope.ShowShortHistory.subscribe(function() {
             $scope.UpdateRoomHistory();
-        })
+        });
 
         $scope.DialogShow = function() {
             $(".modal").modal("show");
         };
         $scope.DialogHide = function() {
             $(".modal").modal("hide");
-            $scope.DialogName('');
         }
 
         $scope.ShowDialog = function (dialogName, dialogTitle, model) {
@@ -206,12 +205,6 @@
             $scope.ShowDialog('addRoomDlg', 'Add room', dialogModel);
         };
 
-        $scope.SelectedRoom = ko.observable(null);
-
-        $scope.InitData = function () {
-            $scope.UpdateRoomList();
-        };
-
         $scope.UpdateRoomList = function () {
             // todo date from picker
             var date = new Date();
@@ -235,7 +228,7 @@
             });
         };
 
-        $scope.UpdateRoomHistory = function() {
+        $scope.UpdateRoomHistory = function () {
             $.ajax({
                 dataType: 'json',
                 url: '/Room/RoomHistory',
@@ -248,6 +241,14 @@
                 success: function (roomStates) {
                     $scope.RoomHistoryItems(roomStates);
                 }
+            });
+        };
+
+        $scope.InitData = function () {
+            $scope.UpdateRoomList();
+            $(".modal").modal("hide");
+            $(".modal").on('hidden.bs.modal', function() {
+                $scope.DialogName('');
             });
         };
 

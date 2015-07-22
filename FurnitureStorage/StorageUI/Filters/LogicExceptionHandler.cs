@@ -4,6 +4,10 @@ using StorageLogic.Exception;
 
 namespace StorageUI.Filters
 {
+    /// <summary>
+    /// Атрибут для отлова исключений типа StorageLogicBaseException и возвращения
+    /// спец.ответа со статусом 200. Работает только для JsonResult-методов
+    /// </summary>
     public class LogicExceptionFilter : HandleErrorAttribute
     {
         public override void OnException(ExceptionContext filterContext)
@@ -22,7 +26,7 @@ namespace StorageUI.Filters
 
             Exception exception = filterContext.Exception;
 
-            if (ExceptionType.IsInstanceOfType(exception) && exception is StorageLogicBaseException)
+            if (exception is StorageLogicBaseException)
             {
                 string actionName = filterContext.RouteData.Values["action"].ToString();
                 Type controllerType = filterContext.Controller.GetType();

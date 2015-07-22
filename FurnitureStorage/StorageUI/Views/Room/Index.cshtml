@@ -72,16 +72,17 @@
         </div>
         <div class="col-md-3">
             <div style="display: none" data-bind="visible: RoomHistoryItems().length > 0">
+                <h4>History</h4>
                 <label>
-                    <input type="checkbox" id="short-history-check" data-bind="checked: ShowShortHistory " />
+                    <input type="checkbox" id="short-history-check" data-bind="checked: ShowShortHistory "/>
                     <span>short</span>
                 </label>
 
                 <table class="table table-condensed table-striped">
                     <tbody data-bind="foreach: RoomHistoryItems">
-                        <tr>
-                            <td data-bind="text: $data"></td>
-                        </tr>
+                    <tr>
+                        <td data-bind="text: $data"></td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
