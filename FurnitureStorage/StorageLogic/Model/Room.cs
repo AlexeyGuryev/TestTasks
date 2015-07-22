@@ -25,7 +25,7 @@ namespace StorageLogic.Model
             return string.Equals(Name, other.Name)
                 && CreationDate.Equals(other.CreationDate)
                 && RemoveDate.Equals(other.RemoveDate)
-                && Equals(FurnitureList, other.FurnitureList);
+                && Enumerable.SequenceEqual(FurnitureList, other.FurnitureList);
         }
 
         public override bool Equals(object obj)

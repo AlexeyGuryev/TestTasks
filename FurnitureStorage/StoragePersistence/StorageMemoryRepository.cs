@@ -53,7 +53,8 @@ namespace StoragePersistence
             // такое получение списка комнат на дату не проканает для StorageDBRepository - нужно писать нормальный мапирующийся в SQL запрос
 
             var roomsInState = new List<Room>();
-            foreach (var room in _rooms)
+            var actualRooms = _rooms.Where(c => c.CreationDate <= date && (c.RemoveDate == null || c.RemoveDate >= date));
+            foreach (var room in actualRooms)
             {
                 var roomState = GetLatestRoomState(room.Name, date);
                 if (roomState != null)
