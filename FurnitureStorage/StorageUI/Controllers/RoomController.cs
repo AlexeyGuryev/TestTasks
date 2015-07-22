@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using StorageLogic;
 using StorageLogic.Service;
 using StorageUI.Filters;
+using System.Collections.Generic;
 
 namespace StorageUI.Controllers
 {
@@ -24,6 +26,22 @@ namespace StorageUI.Controllers
         {
             var rooms = _service.QueryRooms(date);
             return Json(rooms, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult RoomHistory(bool shortFormat) {
+            var history = _service.GetHistory();
+
+            var rows = new List<string>();
+            foreach (var item in history)
+            {
+                rows.Add(shortFormat 
+                    ? string.Format("{0:dd.MM.yyyy}", item.StateDate)
+                    : string.Format("{0:dd.MM.yyyy}, room: {1}({2:dd.MM.yyyy} - {3:dd.MM.yyyy}), furnitures: {4}",
+                        item.StateDate, item.Room.Name, item.Room.CreationDate, item.Room.RemoveDate,
+                        item.Room.Furnitures.Values.Sum())
+                );
+            }
+            return Json(rows, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

@@ -4,11 +4,19 @@
 
         $scope.Rooms = ko.observableArray([]);
 
+        $scope.QueryDate = ko.observable('');
         $scope.DialogName = ko.observable('');
         $scope.DialogTitle = ko.observable('');
         $scope.DialogErrorText = ko.observable('');
         $scope.DialogData = ko.observable(null);
         $scope.DialogSaveModel = {};
+
+        //$scope.RoomHistoryItems = ko.observableArray([]);
+        $scope.ShowShortHistory = ko.observable(false);
+        $scope.RoomHistoryItems = ko.observableArray([]);
+        $scope.ShowShortHistory.subscribe(function () {
+            $scope.UpdateRoomHistory();
+        })
 
         $scope.DialogShow = function() {
             $(".modal").modal("show");
@@ -222,6 +230,23 @@
                         updatedRooms.push(new Room(item));
                     });
                     $scope.Rooms(updatedRooms);
+                    $scope.UpdateRoomHistory();
+                }
+            });
+        };
+
+        $scope.UpdateRoomHistory = function() {
+            $.ajax({
+                dataType: 'json',
+                url: '/Room/RoomHistory',
+                data: {
+                    shortFormat: $scope.ShowShortHistory()
+                },
+                error: function (request, error) {
+                    $scope.ConsoleLogError(error);
+                },
+                success: function (roomStates) {
+                    $scope.RoomHistoryItems(roomStates);
                 }
             });
         };

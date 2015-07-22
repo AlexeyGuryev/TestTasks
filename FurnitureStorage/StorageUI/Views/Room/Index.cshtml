@@ -25,42 +25,66 @@
 
     <div class="row">
         <h1>Rooms and Furnitures</h1>
-        <div class="col-md-12" style="display: none" data-bind="visible: Rooms().length > 0">
-            <table class="table table-condensed table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Room name</th>
-                        <th>Furniture</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody data-bind="foreach: Rooms">
-                    @*<tr data-bind="css: {'success': $index() % 2 === 0}">*@
-                    <tr>
-                        <td data-bind="text: Name"></td>
-                        <td>
-                            <!-- ko: if Furniture().length() > 0 -->
-                            <ul style="list-style-type: none" data-bind="foreach: Furnitures">
-                                <li>
-                                    <span data-bind="text: Type"></span> -
-                                    <span data-bind="text: Count"></span>
-                                </li>
-                            </ul>
-                            <!-- /ko -->
-                        </td>
-                        <td>
-                            <a class="btn btn-primary" href="javascrip:void(0);" data-bind="click: AddFurniture">Add furniture</a>
-                            <a class="btn btn-default" href="javascrip:void(0);" data-bind="click: MoveFurniture, visible: $root.Rooms().length > 1">Move furniture</a>
-                            <a class="btn btn-danger" href="javascrip:void(0);" data-bind="click: RemoveRoom">Remove room</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-2"></div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="room-creation-date">Query date</label>
+                <input type="date" class="form-control" id="room-creation-date" data-bind="text: QueryDate" disabled />
+            </div>           
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-9">
+            <div style="display: none" data-bind="visible: Rooms().length > 0">
+                <table class="table table-condensed table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Room name</th>
+                            <th>Furniture</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: Rooms">
+                        <tr>
+                            <td data-bind="text: Name"></td>
+                            <td>
+                                <!-- ko: if Furniture().length() > 0 -->
+                                <ul style="list-style-type: none" data-bind="foreach: Furnitures">
+                                    <li>
+                                        <span data-bind="text: Type"></span> -
+                                        <span data-bind="text: Count"></span>
+                                    </li>
+                                </ul>
+                                <!-- /ko -->
+                            </td>
+                            <td>
+                                <a class="btn btn-primary" href="javascrip:void(0);" data-bind="click: AddFurniture">Add furniture</a>
+                                <a class="btn btn-default" href="javascrip:void(0);" data-bind="click: MoveFurniture, visible: $root.Rooms().length > 1">Move furniture</a>
+                                <a class="btn btn-danger" href="javascrip:void(0);" data-bind="click: RemoveRoom">Remove room</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <a class="btn btn-primary" href="javascript:void(0);" data-bind="click: AddRoom">Add room</a>
+        </div>
+        <div class="col-md-3">
+            <div style="display: none" data-bind="visible: RoomHistoryItems().length > 0">
+                <label>
+                    <input type="checkbox" id="short-history-check" data-bind="checked: ShowShortHistory " />
+                    <span>short</span>
+                </label>
+
+                <table class="table table-condensed table-striped">
+                    <tbody data-bind="foreach: RoomHistoryItems">
+                        <tr>
+                            <td data-bind="text: $data"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
