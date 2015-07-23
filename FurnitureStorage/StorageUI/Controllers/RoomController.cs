@@ -23,7 +23,7 @@ namespace StorageUI.Controllers
             return View();
         }
         
-        public JsonResult RoomsByDate(DateTime date)
+        public JsonResult RoomsByDate(DateTime? date)
         {
             var rooms = _service.QueryRooms(date);
             return Json(rooms, JsonRequestBehavior.AllowGet);

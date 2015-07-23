@@ -6,6 +6,10 @@
     Html.RenderPartial("_Dialogs");
 }
 
+@{
+    Html.RenderPartial("_Controls");
+}
+
 <div id="room-bindable-block">
     <div class="modal">
         <div class="modal-dialog">
@@ -31,8 +35,11 @@
         <div class="col-md-2">
             <div class="form-group">
                 <label for="room-creation-date">Query date</label>
-                <input type="date" class="form-control" id="room-creation-date" data-bind="text: QueryDate" disabled />
-            </div>           
+                <!-- ko template: { name: 'inputDateControl', data: $root.GetInputDateControl(QueryDate) } -->
+                <!-- /ko -->
+                <a class="btn btn-primary" href="javascript:void(0);" data-bind="click: UpdateRoomList">Get on date</a>
+            </div>        
+            
         </div>
     </div>
     <div class="row">

@@ -6,8 +6,8 @@
         </div>
         <div class="form-group">
             <label for="room-creation-date">Creation date</label>
-            <input type="text" class="form-control" id="room-creation-date"
-                   data-bind="masked: CreationDate, mask: '99.99.9999'" placeholder="DD.MM.YYYY" />
+            <!-- ko template: { name: 'inputDateControl', data: $root.GetInputDateControl(CreationDate) } -->
+            <!-- /ko -->          
         </div>
     </div>
     <div class="modal-footer">
