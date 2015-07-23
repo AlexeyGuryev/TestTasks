@@ -106,7 +106,7 @@ namespace StorageLogic.Service
             }
             else
             {
-                var dateMessage = date != null ? " on date " + date : string.Empty;
+                var dateMessage = date != null ? string.Format(" on date {0:dd.MM.yyyy}", date) : string.Empty;
                 throw new ItemNotFoundException("Room with name {0} not exists{1}", roomName, dateMessage);
             }
         }
@@ -116,7 +116,7 @@ namespace StorageLogic.Service
             var latestState = _repository.GetLatestRoomState(room.Name, null);
             if (latestState.StateDate > date)
             {
-                throw new DateConsistenceException("There is later changes for room {0}", room.Name);
+                throw new DateConsistenceException("There are later changes for room {0}", room.Name);
             }
         }
 

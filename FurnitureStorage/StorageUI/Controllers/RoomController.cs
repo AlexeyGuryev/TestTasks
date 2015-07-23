@@ -5,6 +5,7 @@ using StorageLogic;
 using StorageLogic.Service;
 using StorageUI.Filters;
 using System.Collections.Generic;
+using StorageUI.Models;
 
 namespace StorageUI.Controllers
 {
@@ -36,7 +37,7 @@ namespace StorageUI.Controllers
             {
                 rows.Add(shortFormat 
                     ? string.Format("{0:dd.MM.yyyy}", item.StateDate)
-                    : string.Format("{0:dd.MM.yyyy}, room: {1}({2:dd.MM.yyyy} - {3:dd.MM.yyyy}), furnitures: {4}",
+                    : string.Format("{0:dd.MM.yyyy}: {1}({2:dd.MM.yyyy} - {3:dd.MM.yyyy}), furnitures: {4}",
                         item.StateDate, item.Room.Name, item.Room.CreationDate, item.Room.RemoveDate,
                         item.Room.Furnitures.Values.Sum())
                 );
@@ -46,10 +47,19 @@ namespace StorageUI.Controllers
 
         [HttpPost]
         [LogicExceptionFilter]
-        public JsonResult CreateRoom(string roomName, DateTime? date)
+        public JsonResult CreateRoom(CreateRoomViewModel model) //string roomName, DateTime? date)
         {
-            var room = _service.CreateRoom(roomName, date ?? DateTime.Now);
-            return Json(room);
+            if (ModelState.IsValid) {
+                var room = _service.CreateRoom(model.RoomName, model.Date ?? DateTime.Now);
+                return Json(room);
+            }
+            else
+            {
+                // todo перебор ModelState по всем ошибкам полей
+                // и возврат return не Ok;
+                // moment не возвращает пустое :( и невалидное
+            }
+            return Ok;
         }
 
         [HttpPost]

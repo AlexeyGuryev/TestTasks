@@ -1,4 +1,19 @@
 ﻿$(document).ready(function () {
+    ko.bindingHandlers.masked = {
+        init: function (element, valueAccessor, allBindingsAccessor) {
+            var mask = allBindingsAccessor().mask || {};
+            $(element).mask(mask);
+            ko.utils.registerEventHandler(element, 'focusout', function () {
+                var observable = valueAccessor();
+                observable($(element).val());
+            });
+        },
+        update: function (element, valueAccessor) {
+            var value = ko.utils.unwrapObservable(valueAccessor());
+            $(element).val(value);
+        }
+    };
+
     var RoomsModel = function () {
         var $scope = this;
 
@@ -128,10 +143,16 @@
                 var dialogModel = {
                     Room: room.Name,
                     CreationDate: ko.observable(new Date()),
-                    Furniture: ko.observable(''),                    
+                    Furniture: ko.observable(''),
+                    CreationDate: ko.observable(moment().format("DD.MM.YYYY")),
 
-                    // todo date from picker
-                    SaveAction: function(item) {
+                    SaveAction: function (item) {
+
+                        if (!moment(item.CreationDate(), "DD.MM.YYYY", true).isValid())
+                            return;
+
+                        var date = moment(item.CreationDate(), "DD.MM.YYYY");
+
                         $.ajax({
                             dataType: 'json',
                             url: '/Room/CreateFurniture',
@@ -139,7 +160,7 @@
                             data: {
                                 type: item.Furniture(),
                                 roomName: item.Room,
-                                date: item.CreationDate().toISOString()
+                                date: date.toISOString()
                             },
                             error: function(request, error) {
                                 $scope.ConsoleLogError(error);
@@ -176,17 +197,22 @@
         $scope.AddRoom = function () {
             var dialogModel = {
                 Room: ko.observable(''),
-                CreationDate: ko.observable(new Date()),
+                CreationDate: ko.observable(moment().format("DD.MM.YYYY")),
 
-                // todo date from picker
                 SaveAction: function (item) {
+
+                    // todo в контрол на потерю фокуса
+                    if (!moment(item.CreationDate(), "DD.MM.YYYY", true).isValid())
+                        return;
+                    var date = moment(item.CreationDate(), "DD.MM.YYYY");
+                    
                     $.ajax({
                         dataType: 'json',
                         url: '/Room/CreateRoom',
                         type: "POST",
                         data: {
                             roomName: item.Room,
-                            date: item.CreationDate().toISOString()
+                            date: date.toISOString()
                         },
                         error: function (request, error) {
                             $scope.ConsoleLogError(error);

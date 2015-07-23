@@ -6,7 +6,8 @@
         </div>
         <div class="form-group">
             <label for="room-creation-date">Creation date</label>
-            <input type="date" class="form-control" id="room-creation-date" data-bind="text: CreationDate" disabled />
+            <input type="text" class="form-control" id="room-creation-date"
+                   data-bind="masked: CreationDate, mask: '99.99.9999'" placeholder="DD.MM.YYYY" />
         </div>
     </div>
     <div class="modal-footer">
@@ -23,7 +24,8 @@
         </div>
         <div class="form-group">
             <label for="furniture-creation-date">Creation date</label>
-            <input type="datetime" class="form-control" id="furniture-creation-date" data-bind="text: CreationDate" disabled/>
+            <input type="datetime" class="form-control" id="furniture-creation-date"
+                   data-bind="masked: CreationDate, mask: '99.99.9999'" placeholder="DD.MM.YYYY" />
         </div>
     </div>
     <div class="modal-footer">
