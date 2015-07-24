@@ -82,7 +82,7 @@ namespace StorageLogic.Service
 
         public List<Room> QueryRooms(DateTime? queryDate)
         {
-            return _repository.GetRoomsWithStateOnDate(queryDate);
+            return _repository.GetRoomsWithStateOnDate(queryDate ?? DateTime.MaxValue);
         }
 
         public List<RoomState> GetHistory()

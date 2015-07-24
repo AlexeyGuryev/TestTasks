@@ -8,6 +8,8 @@ namespace StorageUI
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
+            #region js library
+
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
 
@@ -32,12 +34,24 @@ namespace StorageUI
             bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
                       "~/Scripts/knockout-{version}.js"));
 
+            #endregion
+
+            #region custom js
+
             bundles.Add(new ScriptBundle("~/bundles/room").Include(
-                      "~/Scripts/room.js"));
+                      "~/Scripts/room/main.js",
+                      "~/Scripts/room/dialogs.js",
+                      "~/Scripts/room/controls.js"));
+
+            #endregion
+
+            #region css
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            #endregion
         }
     }
 }

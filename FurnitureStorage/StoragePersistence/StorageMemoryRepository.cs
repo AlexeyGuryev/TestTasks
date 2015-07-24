@@ -45,13 +45,6 @@ namespace StoragePersistence
 
         public List<Room> GetRoomsWithStateOnDate(DateTime? date)
         {
-            //return _roomStates
-            //    .OrderByDescending(c => c.StateDate)
-            //    .GroupBy(c => c.Room)
-            //    .Where(group => group.First())
-            // todo придумать нормальный linq запрос с группировкой
-            // такое получение списка комнат на дату не проканает для StorageDBRepository - нужно писать нормальный мапирующийся в SQL запрос
-
             var roomsInState = new List<Room>();
             var actualRooms = _rooms.Where(c => c.CreationDate <= date && (c.RemoveDate == null || c.RemoveDate >= date));
             foreach (var room in actualRooms)
