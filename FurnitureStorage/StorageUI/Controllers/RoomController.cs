@@ -49,43 +49,84 @@ namespace StorageUI.Controllers
         [LogicExceptionFilter]
         public JsonResult CreateRoom(CreateRoomViewModel model) //string roomName, DateTime? date)
         {
-            if (ModelState.IsValid) {
-                var room = _service.CreateRoom(model.RoomName, model.Date ?? DateTime.Now);
-                return Json(room);
+            if (ModelState.IsValid)
+            {
+                _service.CreateRoom(model.RoomName, model.Date ?? DateTime.Now);
+                return Ok;
             }
             else
             {
-                // todo перебор ModelState по всем ошибкам полей
-                // и возврат return не Ok;
-                // moment не возвращает пустое :( и невалидное
+                return Error;
             }
-            return Ok;
         }
 
         [HttpPost]
         [LogicExceptionFilter]
-        public JsonResult RemoveRoom(string roomName, string transfer, DateTime? date)
+        public JsonResult RemoveRoom(RemoveRoomViewModel model)
         {
-            _service.RemoveRoom(roomName, transfer, date ?? DateTime.Now);
-            return Ok;
+            if (ModelState.IsValid)
+            {
+                _service.RemoveRoom(model.RoomName, model.Transfer, model.Date ?? DateTime.Now);
+                return Ok;
+            }
+            else
+            {
+                return Error;
+            }
         }
 
         [HttpPost]
         [LogicExceptionFilter]
-        public JsonResult CreateFurniture(string type, string roomName, DateTime? date)
+        public JsonResult CreateFurniture(CreateFurnitureViewModel model)
         {
-            _service.CreateFurniture(type, roomName, date ?? DateTime.Now);
-            return Ok;
+            if (ModelState.IsValid)
+            {
+                _service.CreateFurniture(model.Type, model.RoomName, model.Date ?? DateTime.Now);
+                return Ok;
+            }
+            else
+            {
+                return Error;
+            }
         }
 
         [HttpPost]
         [LogicExceptionFilter]
-        public JsonResult MoveFurniture(string type, string roomNameFrom, string roomNameTo, DateTime? date)
+        public JsonResult MoveFurniture(MoveFurnitureViewModel model)
         {
-            _service.MoveFurniture(type, roomNameFrom, roomNameTo, date ?? DateTime.Now);
-            return Ok;
+            if (ModelState.IsValid)
+            {
+                _service.MoveFurniture(model.Type, model.RoomNameFrom, model.RoomNameTo, model.Date ?? DateTime.Now);
+                return Ok;
+            }
+            else
+            {
+                return Error;
+            }
         }
 
-        private JsonResult Ok { get { return Json(new { IsOk = true }); } }
+        #region помощники ошибок
+
+        private JsonResult Ok { get { return Json(new ResultViewModel { IsOk = true }); } }
+
+        private JsonResult Error
+        {
+            get
+            {
+                var errorList = ModelState
+                    .Select(v => v.Value)
+                    .SelectMany(e => e.Errors)
+                    .Select(m => m.ErrorMessage)
+                    .ToList();
+
+                return Json(new ResultViewModel
+                {
+                    IsOk = false,
+                    Errors = errorList
+                });
+            }
+        }
+
+        #endregion
     }
 }

@@ -8,7 +8,7 @@
 
         $scope.DialogName = ko.observable('');
         $scope.DialogTitle = ko.observable('');
-        $scope.DialogErrorText = ko.observable('');
+        $scope.DialogErrors = ko.observableArray([]);
         $scope.DialogData = ko.observable(null);
         $scope.DialogSaveModel = {};
 
@@ -26,6 +26,7 @@
         }
 
         $scope.ShowDialog = function (dialogName, dialogTitle, model) {
+            $scope.DialogErrors([]);
             $scope.DialogData(model);
             $scope.DialogTitle(dialogTitle);
             $scope.DialogName(dialogName);

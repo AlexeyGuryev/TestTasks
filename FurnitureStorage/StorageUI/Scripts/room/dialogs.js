@@ -14,10 +14,6 @@
     });
 
     $scopeDialog.SaveAction = function (item) {
-        if (!item.RoomTo() || !item.Furniture()) {
-            return;
-        }
-
         $.ajax({
             dataType: 'json',
             url: '/Room/MoveFurniture',
@@ -32,11 +28,11 @@
                 $scopeApp.ConsoleLogError(error);
             },
             success: function (data) {
-                if (data.hasOwnProperty('Error')) {
-                    $scopeApp.DialogErrorText(data.Error);
-                } else {
+                if (data.IsOk) {
                     $scopeApp.DialogHide();
+                } else {
                     $scopeApp.UpdateRoomList();
+                    $scopeApp.DialogErrors(data.Errors);
                 }
             }
         });
@@ -58,10 +54,6 @@ var RemoveDialog = function (room, context) {
     });
 
     $scopeDialog.SaveAction = function (item) {
-        if (!item.RoomTo()) {
-            return;
-        }
-
         $.ajax({
             dataType: 'json',
             url: '/Room/RemoveRoom',
@@ -75,11 +67,11 @@ var RemoveDialog = function (room, context) {
                 $scopeApp.ConsoleLogError(error);
             },
             success: function (data) {
-                if (data.hasOwnProperty('Error')) {
-                    $scopeApp.DialogErrorText(data.Error);
-                } else {
+                if (data.IsOk) {
                     $scopeApp.DialogHide();
+                } else {
                     $scopeApp.UpdateRoomList();
+                    $scopeApp.DialogErrors(data.Errors);
                 }
             }
         });
@@ -109,11 +101,11 @@ var AddFurnitureDialog = function (room, context) {
                 $scopeApp.ConsoleLogError(error);
             },
             success: function (data) {
-                if (data.hasOwnProperty('Error')) {
-                    $scopeApp.DialogErrorText(data.Error);
-                } else {
+                if (data.IsOk) {
                     $scopeApp.DialogHide();
+                } else {
                     $scopeApp.UpdateRoomList();
+                    $scopeApp.DialogErrors(data.Errors);
                 }
             }
         });
@@ -141,11 +133,11 @@ var CreateRoomDialog = function (context) {
                 $scopeApp.ConsoleLogError(error);
             },
             success: function (data) {
-                if (data.hasOwnProperty('Error')) {
-                    $scopeApp.DialogErrorText(data.Error);
-                } else {
+                if (data.IsOk) {
                     $scopeApp.DialogHide();
+                } else {
                     $scopeApp.UpdateRoomList();
+                    $scopeApp.DialogErrors(data.Errors);
                 }
             }
         });

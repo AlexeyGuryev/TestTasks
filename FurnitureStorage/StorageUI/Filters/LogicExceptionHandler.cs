@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Web.Mvc;
 using StorageLogic.Exception;
+using StorageUI.Models;
+using System.Collections.Generic;
 
 namespace StorageUI.Filters
 {
@@ -39,9 +41,10 @@ namespace StorageUI.Filters
                 {
                     filterContext.Result = new JsonResult
                     {
-                        Data = new
+                        Data = new ResultViewModel
                         {
-                            Error = exception.Message
+                            IsOk = false,
+                            Errors = new List<string> { exception.Message }
                         },
                         JsonRequestBehavior = JsonRequestBehavior.AllowGet
                     };
