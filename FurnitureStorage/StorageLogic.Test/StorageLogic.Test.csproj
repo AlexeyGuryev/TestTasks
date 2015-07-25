@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="PersistenceIntegration\CreateFurnitureTest.cs" />
     <Compile Include="PersistenceIntegration\CreateRoomTest.cs" />
+    <Compile Include="PersistenceIntegration\QueryRoomsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PersistenceIntegration\RemoveRoomTest.cs" />
     <Compile Include="PersistenceIntegration\MoveFurnitureTest.cs" />
