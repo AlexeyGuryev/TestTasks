@@ -16,103 +16,80 @@ namespace StorageLogic.Test
     [TestClass]
     public class MoveFurnitureTest : StorageBaseTest
     {
+        private Room RoomFrom { get; set; }
+        private Room RoomTo { get; set; }
+
+        public TestContext TestContext { get; set; }
+
+        [TestInitialize]
+        public void InitRooms()
+        {
+            RoomFrom = Service.EnsureRoom(TestContext.TestName + "_From", Now);
+            RoomTo = Service.EnsureRoom(TestContext.TestName + "To", Now);
+        }
+
         [TestMethod]
         [ExpectedException(typeof(ItemNotFoundException))]
         public void FurnitureMoveChecksSourceRoomExistsOnFurnitureCreationDate()
         {
-            var existRoom = GetTestRoomNow();
-            Service.MoveFurniture("desk", existRoom.Name, "The room, which i really did not create",
-                DateTime.Now);
+            Service.MoveFurniture("desk", RoomFrom.Name, "The room, which i really did not create",
+                Tomorrow);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ItemNotFoundException))]
         public void FurnitureMoveChecksDestinationRoomExistingOnFurnitureCreationDate()
         {
-            var existRoom = GetTestRoomNow();
-            Service.MoveFurniture("desk", "The room, which i really did not create", existRoom.Name,
-                DateTime.Now);
+            Service.MoveFurniture("desk", "The room, which i really did not create", RoomTo.Name,
+                Tomorrow);
         }
 
         [TestMethod]
         [ExpectedException(typeof(DateConsistenceException))]
-        public void FurnitureMoveDateIsLaterThanLastDestionationRoomStateDate()
+        public void FurnitureMoveChecksMoveDateIsLaterThanLastRoomStateDate()
         {
-            var yesterdayDate = DateTime.Now.AddDays(-1);
+            Service.CreateFurniture("Desk", RoomFrom.Name, Tomorrow);
 
-            var roomFrom = Service.EnsureRoom("FurnitureMoveDateIsLaterThanLastDestionationRoomStateDate_Bath", yesterdayDate);
-            var roomTo = Service.EnsureRoom("FurnitureMoveDateIsLaterThanLastDestionationRoomStateDate_LivingRoom", yesterdayDate);
-
-            Service.CreateFurniture("Desk", roomTo.Name, DateTime.Now);
-
-            Service.MoveFurniture("desk", roomFrom.Name, roomTo.Name, yesterdayDate);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(DateConsistenceException))]
-        public void FurnitureMoveDateIsLaterThanLastSourceRoomStateDate()
-        {
-            var yesterdayDate = DateTime.Now.AddDays(-1);
-
-            var roomFrom = Service.EnsureRoom("FurnitureMoveDateIsLaterThanLastSourceRoomStateDate_Bath", yesterdayDate);
-            var roomTo = Service.EnsureRoom("FurnitureMoveDateIsLaterThanLastSourceRoomStateDate_LivingRoom", yesterdayDate);
-
-            Service.CreateFurniture("Desk", roomFrom.Name, DateTime.Now);
-
-            Service.MoveFurniture("desk", roomFrom.Name, roomTo.Name, yesterdayDate);
+            Service.MoveFurniture("Desk", RoomFrom.Name, RoomTo.Name, Now);
         }
 
         [TestMethod]
         public void FurnitureMoveCauseUpdateRoomsStates()
         {
             var furnitureType = "desk";
-            var roomFrom = Service.EnsureRoom("Bath", DateTime.Now);
-            var roomTo = Service.EnsureRoom("Living room", DateTime.Now);
             
-            var tomorrowDate = DateTime.Now.AddDays(1);
+            Service.CreateFurniture(furnitureType, RoomFrom.Name, Tomorrow);
 
-            Service.CreateFurniture(furnitureType, roomFrom.Name, DateTime.Now);
+            Service.MoveFurniture(furnitureType, RoomFrom.Name, RoomTo.Name, AfterTomorrow);
 
-            Service.MoveFurniture(furnitureType, roomFrom.Name, roomTo.Name, tomorrowDate);
+            var roomToStateHistory = Service.GetRoomHistory(RoomTo.Name) ?? Enumerable.Empty<RoomState>();
+            var roomFromStateHistory = Service.GetRoomHistory(RoomFrom.Name) ?? Enumerable.Empty<RoomState>();
 
-            var roomToStateHistory = Service.GetRoomHistory(roomTo.Name) ?? Enumerable.Empty<RoomState>();
-            var roomFromStateHistory = Service.GetRoomHistory(roomFrom.Name) ?? Enumerable.Empty<RoomState>();
-
-            Assert.IsTrue(roomToStateHistory.Any(c => c.StateDate == tomorrowDate) &&
-                roomFromStateHistory.Any(c => c.StateDate == tomorrowDate));
+            Assert.IsTrue(roomToStateHistory.Any(c => c.StateDate == AfterTomorrow) &&
+                roomFromStateHistory.Any(c => c.StateDate == AfterTomorrow));
         }
 
         [TestMethod]
         public void FurnitureMoveCauseUpdateRoomsFurnitureLists()
         {
             var furnitureType = "desk";
-            var roomFrom = Service.EnsureRoom("FurnitureMoveCauseUpdateRoomsFurnitureLists_Bath", DateTime.Now);
-            var roomTo = Service.EnsureRoom("FurnitureMoveCauseUpdateRoomsFurnitureLists_LivingRoom", DateTime.Now);
 
-            Service.CreateFurniture(furnitureType, roomFrom.Name, DateTime.Now);
+            Service.CreateFurniture(furnitureType, RoomFrom.Name, Tomorrow);
 
-            var roomFromFurnitureCountPrev = roomFrom.Furnitures[furnitureType];
+            var roomFromFurnitureCountPrev = RoomFrom.Furnitures[furnitureType];
+            var roomToFurnitureCountPrev = 0;
 
-            var roomToFurnitureCountPrev = roomTo.Furnitures.ContainsKey(furnitureType)
-                ? roomFrom.Furnitures[furnitureType]
-                : 0;
+            Service.MoveFurniture(furnitureType, RoomFrom.Name, RoomTo.Name, AfterTomorrow);
 
-            Service.MoveFurniture(furnitureType, roomFrom.Name, roomTo.Name, DateTime.Now);
-
-            var roomToFurnitureCountNow = roomTo.Furnitures.ContainsKey(furnitureType)
-                ? roomTo.Furnitures[furnitureType]
+            var roomToFurnitureCountNow = RoomTo.Furnitures.ContainsKey(furnitureType)
+                ? RoomTo.Furnitures[furnitureType]
                 : 0;
 
             Assert.IsTrue(
                 roomToFurnitureCountNow == roomToFurnitureCountPrev + roomFromFurnitureCountPrev
                 &&
-                !roomFrom.Furnitures.ContainsKey(furnitureType)
+                !RoomFrom.Furnitures.ContainsKey(furnitureType)
                 );
-        }
-
-        private Room GetTestRoomNow()
-        {
-            return Service.EnsureRoom("Living room", DateTime.Now);
         }
     }
 }

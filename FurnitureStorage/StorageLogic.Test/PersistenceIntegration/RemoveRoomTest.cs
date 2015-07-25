@@ -17,46 +17,50 @@ namespace StorageLogic.Test
     [TestClass]
     public class RemoveRoomTest : StorageBaseTest
     {
+        private Room RoomToRemove { get; set; }
+        private Room TransferRoom { get; set; }
+
+        public TestContext TestContext { get; set; }
+
+        [TestInitialize]
+        public void InitRooms()
+        {
+            RoomToRemove = Service.EnsureRoom(TestContext.TestName + "_From", Now);
+            TransferRoom = Service.EnsureRoom(TestContext.TestName + "To", Now);
+        }
+
         [TestMethod]
         [ExpectedException(typeof(ItemNotFoundException))]
         public void RemoveRoomChecksThatTransferRoomExistsOnRemoveDate()
         {
-            var roomToRemove = GetRoomWithFurniture(DateTime.Now);
-            Service.RemoveRoom(roomToRemove.Name, "The transfer room, which not exists", DateTime.Now);
+            Service.RemoveRoom(RoomToRemove.Name, "The transfer room, which not exists", Tomorrow);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ItemNotFoundException))]
         public void RemovingRoomMustExistsOnRemoveDate()
         {
-            var roomToRemove = GetRoomWithFurniture(DateTime.Now);
-            Service.RemoveRoom("The transfer room, which not exists", roomToRemove.Name, DateTime.Now);
+            Service.CreateFurniture("Desk", RoomToRemove.Name, Tomorrow);
+
+            Service.RemoveRoom("The transfer room, which not exists", RoomToRemove.Name, AfterTomorrow);
         }
 
         [TestMethod]
         [ExpectedException(typeof (DateConsistenceException))]
         public void RemoveRoomChecksThatDateIsLaterThanLastRoomStateDate()
         {
-            var yesterdayDate = DateTime.Now.AddDays(-1);
+            Service.CreateFurniture("Desk", RoomToRemove.Name, Tomorrow);
 
-            var roomToRemove = Service.EnsureRoom("RemoveRoomChecksThatDateIsLaterThanLastRoomStateDate_Room", yesterdayDate);
-            Service.CreateFurniture("Table", roomToRemove.Name, DateTime.Now);
-
-            var transferRoom = GetRoomWithFurniture(yesterdayDate, "Desk", "RemoveRoomChecksThatDateIsLaterThanLastRoomStateDate_Bath");
-
-            Service.RemoveRoom(roomToRemove.Name, transferRoom.Name, yesterdayDate);
+            Service.RemoveRoom(RoomToRemove.Name, TransferRoom.Name, Tomorrow);
         }
 
         [TestMethod]
         [ExpectedException(typeof (ItemNotFoundException))]
         public void RemoveRoomCheckCreationDateIsLaterThanRemoveDate()
         {
-            var yesterdayDate = DateTime.Now.AddDays(-1);
+            Service.CreateFurniture("Desk", RoomToRemove.Name, Tomorrow);
 
-            var roomToRemove = GetTestRoom(DateTime.Now);
-            var transferRoom = GetRoomWithFurniture(DateTime.Now);
-
-            Service.RemoveRoom(roomToRemove.Name, transferRoom.Name, yesterdayDate);
+            Service.RemoveRoom(RoomToRemove.Name, TransferRoom.Name, Yesterday);
         }
 
         [TestMethod]
@@ -65,20 +69,18 @@ namespace StorageLogic.Test
             var furnitureType1 = "Desk";
             var furnitureType2 = "Chair";
 
-            var roomToRemove = GetRoomWithFurniture(DateTime.Now, furnitureType1);
-            Service.CreateFurniture(furnitureType2, roomToRemove.Name, DateTime.Now);
+            Service.CreateFurniture(furnitureType1, RoomToRemove.Name, Tomorrow);
+            Service.CreateFurniture(furnitureType2, RoomToRemove.Name, AfterTomorrow);
 
-            var transferRoom = Service.CreateRoom("The unique room, i hope it's really unique", DateTime.Now);
-
-            var roomToRemoveFurniture1Count = roomToRemove.Furnitures[furnitureType1];
-            var roomToRemoveFurniture2Count = roomToRemove.Furnitures[furnitureType2];
-            Service.RemoveRoom(roomToRemove.Name, transferRoom.Name, DateTime.Now);
+            var roomToRemoveFurniture1Count = RoomToRemove.Furnitures[furnitureType1];
+            var roomToRemoveFurniture2Count = RoomToRemove.Furnitures[furnitureType2];
+            Service.RemoveRoom(RoomToRemove.Name, TransferRoom.Name, AfterTomorrow.AddDays(1));
 
             Assert.IsTrue(
-                transferRoom.Furnitures.ContainsKey(furnitureType1)
-                && transferRoom.Furnitures.ContainsKey(furnitureType2)
-                && transferRoom.Furnitures[furnitureType1] == roomToRemoveFurniture1Count
-                && transferRoom.Furnitures[furnitureType2] == roomToRemoveFurniture2Count
+                TransferRoom.Furnitures.ContainsKey(furnitureType1)
+                && TransferRoom.Furnitures.ContainsKey(furnitureType2)
+                && TransferRoom.Furnitures[furnitureType1] == roomToRemoveFurniture1Count
+                && TransferRoom.Furnitures[furnitureType2] == roomToRemoveFurniture2Count
             );
         }
 
@@ -86,31 +88,18 @@ namespace StorageLogic.Test
         public void RemoveWithTransferChangeRoomStates()
         {
             var furnitureType = "Desk";
-            var removeDate = DateTime.Now;
+            var removeDate = AfterTomorrow;
 
-            var roomToRemove = GetRoomWithFurniture(removeDate, furnitureType);
-            var transferRoom = GetTestRoom(removeDate);
+            Service.CreateFurniture(furnitureType, RoomToRemove.Name, Tomorrow);
             
-            Service.RemoveRoom(roomToRemove.Name, transferRoom.Name, removeDate);
+            Service.RemoveRoom(RoomToRemove.Name, TransferRoom.Name, removeDate);
 
-            var roomToRemoveState = Service.GetRoomHistory(roomToRemove.Name);
-            var transferRoomState = Service.GetRoomHistory(transferRoom.Name);
+            var roomToRemoveState = Service.GetRoomHistory(RoomToRemove.Name);
+            var transferRoomState = Service.GetRoomHistory(TransferRoom.Name);
 
             Assert.IsTrue(roomToRemoveState.Any(rr => rr.StateDate == removeDate 
                 &&
                 transferRoomState.Any(tr => tr.StateDate == removeDate)));
-        }
-
-        private Room GetTestRoom(DateTime date)
-        {
-            return Service.EnsureRoom("Living room", date);
-        }
-
-        private Room GetRoomWithFurniture(DateTime date, string furnitureType = "Desk", string roomName = "Bath")
-        {
-            var room = Service.EnsureRoom(roomName, date);
-            Service.CreateFurniture(furnitureType, room.Name, date);
-            return room;
         }
     }
 }

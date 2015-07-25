@@ -44,8 +44,7 @@ namespace StorageLogic.Service
 
         public Room EnsureRoom(string roomName, DateTime creationDate)
         {
-            var room = _repository.GetRoomByName(roomName);
-            return room ?? CreateRoom(roomName, creationDate);
+            return GetRoom(roomName) ?? CreateRoom(roomName, creationDate);
         }
 
         public void RemoveRoom(string roomName, string transferRoomName, DateTime removeDate) 
