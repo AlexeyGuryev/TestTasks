@@ -9,7 +9,7 @@ namespace StorageLogic.Test
 
         public StorageBaseTest()
         {
-            Service = new StorageService(new StorageMemoryRepository());
+            Service = new StorageService(new StorageMemoryRepositoryStub());
         }
     }
 }

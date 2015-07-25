@@ -6,6 +6,9 @@ using StoragePersistence;
 
 namespace StorageLogic.Test
 {
+    /// <summary>
+    /// # query: вывод списка комнат с мебелью внутри каждой
+    /// </summary>
     [TestClass]
     public class QueryRoomsTest
     {
@@ -24,7 +27,7 @@ namespace StorageLogic.Test
             _tomorrow = _now.AddDays(1);
             _yesterday = _now.AddDays(-1);
 
-            Service = new StorageService(new StorageMemoryRepository());
+            Service = new StorageService(new StorageMemoryRepositoryStub());
 
             var room = Service.EnsureRoom(_testRoom, _yesterday);
             Service.CreateFurniture("Desk", room.Name, _now);

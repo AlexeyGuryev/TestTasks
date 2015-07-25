@@ -42,7 +42,7 @@ namespace StorageUI
 
         private static void RegisterTypes(ContainerBuilder builder)
         {
-            builder.RegisterType<StorageMemoryRepository>().As<IStorageRepository>().SingleInstance();
+            builder.RegisterType<StorageMemoryRepositoryStub>().As<IStorageRepository>().SingleInstance();
         }
     }
 }

@@ -22,8 +22,10 @@ namespace StorageLogic
 
         void RemoveRoom(string name, DateTime removeDate);
 
-        //void SaveState();
+        void BeginTransaction();
 
-        //void SaveStateAsync();
+        void EndTransaction();
+
+        void UpdateRoom(Room room);
     }
 }
