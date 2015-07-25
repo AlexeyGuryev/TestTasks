@@ -50,13 +50,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="PersistenceIntegration\CreateFurnitureTest.cs" />
-    <Compile Include="PersistenceIntegration\CreateRoomTest.cs" />
-    <Compile Include="PersistenceIntegration\QueryRoomsTest.cs" />
+    <Compile Include="CreateFurnitureTest.cs" />
+    <Compile Include="CreateRoomTest.cs" />
+    <Compile Include="QueryRoomsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PersistenceIntegration\RemoveRoomTest.cs" />
-    <Compile Include="PersistenceIntegration\MoveFurnitureTest.cs" />
-    <Compile Include="PersistenceIntegration\StorageBaseTest.cs" />
+    <Compile Include="RemoveRoomTest.cs" />
+    <Compile Include="MoveFurnitureTest.cs" />
+    <Compile Include="StorageBaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StorageLogic\StorageLogic.csproj">
@@ -68,9 +68,7 @@
       <Name>StoragePersistence</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Unit\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
