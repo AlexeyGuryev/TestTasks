@@ -30,10 +30,11 @@
             success: function (data) {
                 if (data.IsOk) {
                     $scopeApp.DialogHide();
+                    $scopeApp.UpdateRoomHistory();
                 } else {
-                    $scopeApp.UpdateRoomList();
                     $scopeApp.DialogErrors(data.Errors);
                 }
+
             }
         });
     }
@@ -69,8 +70,8 @@ var RemoveDialog = function (room, context) {
             success: function (data) {
                 if (data.IsOk) {
                     $scopeApp.DialogHide();
+                    $scopeApp.UpdateRoomHistory();
                 } else {
-                    $scopeApp.UpdateRoomList();
                     $scopeApp.DialogErrors(data.Errors);
                 }
             }
@@ -103,8 +104,8 @@ var AddFurnitureDialog = function (room, context) {
             success: function (data) {
                 if (data.IsOk) {
                     $scopeApp.DialogHide();
+                    $scopeApp.UpdateRoomHistory();
                 } else {
-                    $scopeApp.UpdateRoomList();
                     $scopeApp.DialogErrors(data.Errors);
                 }
             }
@@ -120,7 +121,6 @@ var CreateRoomDialog = function (context) {
     $scopeDialog.CreationDate = ko.observable($scopeApp.GetDefaultDate()),
 
     $scopeDialog.SaveAction = function (item) {
-        var date =
         $.ajax({
             dataType: 'json',
             url: '/Room/CreateRoom',
@@ -135,8 +135,8 @@ var CreateRoomDialog = function (context) {
             success: function (data) {
                 if (data.IsOk) {
                     $scopeApp.DialogHide();
-                } else {
-                    $scopeApp.UpdateRoomList();
+                    $scopeApp.UpdateRoomHistory();
+                } else {                    
                     $scopeApp.DialogErrors(data.Errors);
                 }
             }
