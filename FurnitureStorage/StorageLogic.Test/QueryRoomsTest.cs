@@ -46,14 +46,6 @@ namespace StorageLogic.Test
         }
 
         [TestMethod]
-        public void QueryRoomsContainsRoomAfterCreateRoom()
-        {
-            var rooms = Service.QueryRooms(_yesterday);
-            var room = rooms.FirstOrDefault(c => c.Name == _testRoom);
-            Assert.IsNotNull(room);
-        }
-
-        [TestMethod]
         public void QueryRoomsContainsRoomWithoutFurnitureAfterCreateRoom()
         {
             var rooms = Service.QueryRooms(_yesterday);

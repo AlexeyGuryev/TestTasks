@@ -45,7 +45,6 @@
     <Compile Include="Exception\ItemAlreadyExistsException.cs" />
     <Compile Include="Exception\ItemNotFoundException.cs" />
     <Compile Include="IStorageRepository.cs" />
-    <Compile Include="Model\FurnitureAmount.cs" />
     <Compile Include="Model\Room.cs" />
     <Compile Include="Model\RoomState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

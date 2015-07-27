@@ -12,6 +12,8 @@ namespace StorageLogic.Model
 
         public DateTime StateDate { get; set; }
 
+        public RoomState() { }
+
         /// <summary>
         /// Конструктор с клонированием объекта комнаты
         /// </summary>
@@ -24,7 +26,7 @@ namespace StorageLogic.Model
                 Name = room.Name,
                 CreationDate = room.CreationDate,
                 RemoveDate = room.RemoveDate,
-                FurnitureList = room.FurnitureList.ToList()
+                Furnitures = room.Furnitures.ToDictionary(k => k.Key, v => v.Value)
             };
             StateDate = state;
         }

@@ -46,11 +46,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\FurnitureEntity.cs" />
+    <Compile Include="Entities\RoomEntity.cs" />
+    <Compile Include="Entities\RoomStateEntity.cs" />
+    <Compile Include="Migrations\201507270159396_Init.cs" />
+    <Compile Include="Migrations\201507270159396_Init.Designer.cs">
+      <DependentUpon>201507270159396_Init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="StorageEFContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StorageEFRepository.cs" />
     <Compile Include="StorageMemoryRepositoryStub.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +70,11 @@
       <Project>{e2a9eef7-4ee9-46be-8a87-6db168198eaa}</Project>
       <Name>StorageLogic</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201507270159396_Init.resx">
+      <DependentUpon>201507270159396_Init.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,31 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using StorageLogic.Model;
 
 namespace StorageLogic
 {
-    public interface IStorageRepository
+    public interface IStorageRepository : IDisposable
     {
+        void BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
+
         Room CreateRoom(string name, DateTime creationDate);
+
+        void UpdateRoom(Room room, DateTime stateDate);
 
         Room GetRoomByName(string name);
 
         List<Room> GetRoomsWithStateOnDate(DateTime? date);
 
-        RoomState AddRoomState(Room room, DateTime stateDate);
-
-        RoomState GetLatestRoomState(string roomName, DateTime? queryDate);
-
         List<RoomState> GetRoomStates(string roomName);
 
         List<RoomState> GetAllRoomStates();
 
-        void RemoveRoom(string name, DateTime removeDate);
+        void CommitTransaction();
 
-        void BeginTransaction();
-
-        void EndTransaction();
-
-        void UpdateRoom(Room room);
+        void RollbackTransaction();
     }
 }

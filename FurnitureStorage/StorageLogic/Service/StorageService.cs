@@ -9,9 +9,9 @@ namespace StorageLogic.Service
     /// <summary>
     /// Доменная логика работы с комнатами и мебелью
     /// </summary>
-    public class StorageService
+    public class StorageService : IDisposable
     {
-        private readonly IStorageRepository _repository = null;       
+        private readonly IStorageRepository _repository = null;
 
         public StorageService(IStorageRepository repository)
         {
@@ -21,25 +21,25 @@ namespace StorageLogic.Service
         public Room CreateRoom(string roomName, DateTime creationDate)
         {
             _repository.BeginTransaction();
-
-            var room = GetRoom(roomName, null);
             try
-            {                
+            {
+                var room = GetRoom(roomName, null);
                 if (room == null)
                 {
                     room = _repository.CreateRoom(roomName, creationDate);
-                    AddRoomStateIfChanged(room, creationDate);
+                    _repository.CommitTransaction();
+                    return room;
                 }
                 else
                 {
                     throw new ItemAlreadyExistsException("Room with name {0} already exists", roomName);
                 }
             }
-            finally
+            catch (System.Exception)
             {
-                _repository.EndTransaction();
+                _repository.RollbackTransaction();
+                throw;
             }
-            return room;
         }
 
         public Room EnsureRoom(string roomName, DateTime creationDate)
@@ -47,45 +47,58 @@ namespace StorageLogic.Service
             return GetRoom(roomName) ?? CreateRoom(roomName, creationDate);
         }
 
-        public void RemoveRoom(string roomName, string transferRoomName, DateTime removeDate) 
+        public void RemoveRoom(string roomName, string transferRoomName, DateTime removeDate)
         {
             _repository.BeginTransaction();
-
-            var roomToRemove = GetExistsRoom(roomName, removeDate);
-            var transferRoom = GetExistsRoom(transferRoomName, removeDate);
-
-            var furnitures = roomToRemove.Furnitures.Keys.ToList();
-            foreach (var furniture in furnitures)
+            try
             {
-                var countValue = roomToRemove.Furnitures[furniture];
-                transferRoom.AddFurniture(furniture, countValue);
-                roomToRemove.RemoveFurniture(furniture, countValue);
+                var roomToRemove = GetExistsRoom(roomName, removeDate);
+                var transferRoom = GetExistsRoom(transferRoomName, removeDate);
+
+                var furnitures = roomToRemove.Furnitures.Keys.ToList();
+                foreach (var furniture in furnitures)
+                {
+                    var countValue = roomToRemove.Furnitures[furniture];
+                    transferRoom.AddFurniture(furniture, countValue);
+                    roomToRemove.RemoveFurniture(furniture, countValue);
+                }
+                roomToRemove.RemoveDate = removeDate;
+
+                _repository.UpdateRoom(roomToRemove, removeDate);
+                _repository.UpdateRoom(transferRoom, removeDate);
+
+                _repository.CommitTransaction();
             }
-            roomToRemove.RemoveDate = removeDate;
-
-            UpdateRoomAndAddNewState(roomToRemove, removeDate);
-            UpdateRoomAndAddNewState(transferRoom, removeDate);
-
-            _repository.EndTransaction();
+            catch (System.Exception)
+            {
+                _repository.RollbackTransaction();
+                throw;
+            }
         }
 
         public void CreateFurniture(string furnitureType, string roomName, DateTime createFurnitureDate)
         {
             _repository.BeginTransaction();
+            try
+            {
+                var room = GetExistsRoom(roomName, createFurnitureDate);
+                room.AddFurniture(furnitureType);
 
-            var room = GetExistsRoom(roomName, createFurnitureDate);
-            room.AddFurniture(furnitureType);
+                _repository.UpdateRoom(room, createFurnitureDate);
 
-            UpdateRoomAndAddNewState(room, createFurnitureDate);
-
-            _repository.EndTransaction();
+                _repository.CommitTransaction();
+            }
+            catch (System.Exception)
+            {
+                _repository.RollbackTransaction();
+                throw;
+            }
         }
 
         public void MoveFurniture(string furnitureType, string roomNameFrom, string roomNameTo,
             DateTime moveFurnitureDate)
         {
             _repository.BeginTransaction();
-
             try
             {
                 var roomFrom = GetExistsRoom(roomNameFrom, moveFurnitureDate);
@@ -97,8 +110,9 @@ namespace StorageLogic.Service
                     roomTo.AddFurniture(furnitureType);
                     roomFrom.RemoveFurniture(furnitureType);
 
-                    UpdateRoomAndAddNewState(roomTo, moveFurnitureDate);
-                    UpdateRoomAndAddNewState(roomFrom, moveFurnitureDate);
+                    _repository.UpdateRoom(roomTo, moveFurnitureDate);
+                    _repository.UpdateRoom(roomFrom, moveFurnitureDate);
+                    _repository.CommitTransaction();
                 }
                 else
                 {
@@ -106,9 +120,10 @@ namespace StorageLogic.Service
                         furnitureType, roomFrom);
                 }
             }
-            finally
+            catch (System.Exception)
             {
-                _repository.EndTransaction();
+                _repository.RollbackTransaction();
+                throw;
             }
         }
 
@@ -125,31 +140,6 @@ namespace StorageLogic.Service
         public List<RoomState> GetRoomHistory(string roomName)
         {
             return _repository.GetRoomStates(roomName);
-        }
-
-        private void AddRoomStateIfChanged(Room room, DateTime newStateDate)
-        {
-            var lastRoomState = _repository.GetLatestRoomState(room.Name, newStateDate);
-            if (lastRoomState != null)
-            {
-                if (lastRoomState.StateDate >= newStateDate)
-                {
-                    throw new DateConsistenceException(
-                        "Room {0} already has state on {1:dd.MM.yyyy} or later date",
-                        room.Name, newStateDate);
-                }
-                if (room.Equals(lastRoomState.Room))
-                {
-                    return;
-                }
-            }
-            _repository.AddRoomState(room, newStateDate);
-        }
-
-        private void UpdateRoomAndAddNewState(Room room, DateTime updateDate)
-        {
-            _repository.UpdateRoom(room);
-            AddRoomStateIfChanged(room, updateDate);
         }
 
         private Room GetExistsRoom(string roomName, DateTime? date = null)
@@ -171,6 +161,14 @@ namespace StorageLogic.Service
                 return room;
             }
             return null;
+        }
+
+        public void Dispose()
+        {
+            if (_repository != null)
+            {
+                _repository.Dispose();
+            }
         }
     }
 }

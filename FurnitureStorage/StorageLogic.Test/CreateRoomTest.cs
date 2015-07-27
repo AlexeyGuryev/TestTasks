@@ -22,18 +22,5 @@ namespace StorageLogic.Test
             Service.EnsureRoom(roomName, DateTime.Now);
             Service.CreateRoom(roomName, DateTime.Now);
         }
-
-        [TestMethod]
-        public void CreateRoomCreatesNewRoomState()
-        {
-            var roomName = "CreateRoomCreatesNewRoomState";
-            var date = DateTime.Now;
-
-            Service.EnsureRoom(roomName, date);
-
-            var roomStateHistory = Service.GetRoomHistory(roomName) ?? Enumerable.Empty<RoomState>();
-
-            Assert.IsTrue(roomStateHistory.Any(c => c.StateDate == date));
-        }
     }
 }
