@@ -54,6 +54,7 @@ namespace StoragePersistence
                 Furnitures = new Dictionary<string, int>()
             };
             _rooms.Add(newRoom);
+            AddRoomState(newRoom, creationDate);
             return newRoom;
         }
 
@@ -81,7 +82,7 @@ namespace StoragePersistence
 
         private RoomState AddRoomState(Room room, DateTime newStateDate)
         {
-            var lastRoomState = GetLatestRoomState(room.Name, newStateDate);
+            var lastRoomState = GetLatestRoomState(room.Name);
             if (lastRoomState != null)
             {
                 if (lastRoomState.StateDate >= newStateDate)
@@ -100,7 +101,7 @@ namespace StoragePersistence
             return newRoomState;
         }
 
-        private RoomState GetLatestRoomState(string roomName, DateTime? queryDate)
+        private RoomState GetLatestRoomState(string roomName, DateTime? queryDate = null)
         {
             return _roomStates
                 .OrderByDescending(c => c.StateDate)

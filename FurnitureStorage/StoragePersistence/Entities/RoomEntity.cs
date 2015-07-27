@@ -51,43 +51,6 @@ namespace StoragePersistence.Entities
             RoomStates.Add(newState);
         }
 
-        //internal void FromModel(Room room)
-        //{
-        //    this.Name = room.Name;
-        //    this.CreationDate = room.CreationDate;
-        //    this.RemoveDate = room.RemoveDate;
-
-        //    if (FurnitureList == null)
-        //    {
-        //        FurnitureList = new HashSet<FurnitureEntity>();
-        //    }
-
-        //    foreach (var furnitureEntity in FurnitureList.ToList())
-        //    {
-        //        if (!room.Furnitures.ContainsKey(furnitureEntity.Type))
-        //        {
-        //            FurnitureList.Remove(furnitureEntity);
-        //        }
-        //    }
-
-        //    foreach (var furniture in room.Furnitures)
-        //    {
-        //        var furnitureEntity = FurnitureList.FirstOrDefault(c => c.Type == furniture.Key);
-        //        if (furnitureEntity == null)
-        //        {
-        //            FurnitureList.Add(new FurnitureEntity
-        //            {
-        //                Type = furniture.Key,
-        //                Count = furniture.Value
-        //            });
-        //        }
-        //        else
-        //        {
-        //            furnitureEntity.Count = furniture.Value;
-        //        }
-        //    }
-        //}
-
         internal RoomStateEntity GetStateOnDate(DateTime? queryDate = null)
         {
             return RoomStates

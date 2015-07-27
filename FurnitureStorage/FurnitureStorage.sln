@@ -7,8 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StorageLogic", "StorageLogi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C821F0E5-D400-4DA8-B73C-4965BD208053}"
 	ProjectSection(SolutionItems) = preProject
+		QuickHowTo.swf = QuickHowTo.swf
 		Task.txt = Task.txt
-		..\..\..\..\Desktop\UseCase.txt = ..\..\..\..\Desktop\UseCase.txt
+		UseCase.txt = UseCase.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StorageLogic.Test", "StorageLogic.Test\StorageLogic.Test.csproj", "{58EF60DF-43B9-48B7-A56A-6EB810AEC562}"
