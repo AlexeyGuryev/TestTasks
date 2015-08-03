@@ -172,7 +172,7 @@
     <Content Include="Scripts\room\main.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\Shared\_Controls.cshtml" />
-    <None Include="Views\Shared\_Dialogs.cshtml" />
+    <Content Include="Views\Shared\_Dialogs.cshtml" />
     <Content Include="task.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
