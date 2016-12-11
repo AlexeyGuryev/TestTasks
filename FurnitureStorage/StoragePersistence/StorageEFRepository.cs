@@ -77,6 +77,7 @@ namespace StoragePersistence
         public List<Room> GetRoomsWithStateOnDate(DateTime? date)
         {
             var actualRooms = context.Rooms
+                .Include(c => c.RoomStates.Select(rs => rs.FurnitureList))
                 .Where(c => c.CreationDate <= date && (c.RemoveDate == null || c.RemoveDate > date))
                 .ToList();
 
